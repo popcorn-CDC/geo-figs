@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>（3）△ACM 面积的最大值</title>
+<style>
+  html,body{margin:0;padding:0;background:transparent;color:var(--foreground,#1d1f24);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;}
+  .hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 4px}
+  .hd h3{margin:0;font-size:15px;font-weight:600}
+  .hd .sub{font-size:12px;color:var(--muted-foreground,#6b7280)}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 206px;gap:16px;align-items:start}
+  @media (max-width:680px){.grid{grid-template-columns:1fr}}
+  svg{width:100%;height:auto;display:block;overflow:visible;touch-action:none}
+  .panel{border:1px solid var(--border,#d9dce1);border-radius:10px;padding:9px 11px;
+    background:var(--card,rgba(127,127,127,.04))}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;padding:4px 0}
+  .row + .row{border-top:1px dashed var(--border,#d9dce1)}
+  .k{color:var(--muted-foreground,#6b7280)}
+  .v{font-variant-numeric:tabular-nums;font-weight:650;font-size:13px}
+  .eq{color:#2f9e63;font-weight:650}
+  .ctl{margin-top:8px;display:grid;grid-template-columns:64px minmax(0,1fr) 50px;gap:7px 9px;align-items:center;font-size:12px}
+  .ctl input[type=range]{width:100%;accent-color:var(--accent,#3b82f6)}
+  .ctl .num{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted-foreground,#6b7280);font-size:11.5px}
+  .btns{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center}
+  button{font:inherit;font-size:12px;padding:5px 11px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--border,#d9dce1);background:transparent;color:inherit}
+  button.on{background:var(--accent,#3b82f6);border-color:transparent;color:#fff}
+  .step{margin-top:10px;font-size:11.5px;line-height:1.7;color:var(--muted-foreground,#6b7280)}
+  .step b{color:var(--foreground,#1d1f24)}
+  .step .n{display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;border-radius:50%;
+    background:var(--border,#d9dce1);color:var(--foreground,#1d1f24);font-size:10px;margin-right:4px}
+  .tip{font-size:11.5px;color:var(--muted-foreground,#6b7280);margin:6px 0 0}
+</style>
+</head>
+<body>
+  <div class="hd">
+    <h3>（3）△ACM 面积的最大值：底固定，就看 M 离 AC 多远</h3>
+    <span class="sub">A 在上、BC 水平，与原卷一致；拖 P 沿弧滑动</span>
+  </div>
+
+  <div class="grid">
+    <div>
+      <svg id="s" viewBox="0 0 700 480" role="img" aria-label="面积最值图"></svg>
+      <div class="ctl">
+        <label for="ra">∠PAC</label>
+        <input id="ra" type="range" min="2" max="44" step="0.5" value="8">
+        <span class="num" id="va">8.0°</span>
+      </div>
+      <div class="btns">
+        <button id="play">▶ 动起来</button>
+        <button id="tr" class="on">两条轨迹圆</button>
+        <button id="mx">跳到面积最大</button>
+        <span class="tip" id="tip"></span>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel" id="panel"></div>
+      <div class="step">
+        <div><span class="n">1</span><b>P 在圆上</b>：∠APC=135° 是定值，AC=2 定长<br>
+          ⟹ P 在以 AC 为弦、半径 √2 的圆弧上（圆心 O 是 △ABC 外侧那个正方形的顶点）。</div>
+        <div style="margin-top:6px"><span class="n">2</span><b>M 也画圆</b>：M 是 PB 中点，B 固定<br>
+          ⟹ M 的轨迹是 P 的圆缩小一半：圆心 O′=(O+B)/2，半径 √2/2。</div>
+        <div style="margin-top:6px"><span class="n">3</span><b>底固定比高</b>：S=½·AC·d(M,AC)=d(M,AC)<br>
+          ⟹ d 最大 = O′ 到 AC 的距离 + 半径 = ½ + √2/2。</div>
+        <div style="margin-top:6px"><span class="n">4</span><b>S<sub>max</sub></b>=½·2·(½+√2/2)=<b>(1+√2)/2≈1.2071</b>，<br>
+          此时 P 在弧中点，∠PAC=∠PCA=22.5°。</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const R2=Math.SQRT2, D2R=Math.PI/180;
+const A=[0,R2], B=[-R2,0], Cf=[R2,0];         // A 在上，BC 水平（同原卷）
+const O=[R2,R2], R=R2;                         // P 的圆
+const Op=[(O[0]+B[0])/2,(O[1]+B[1])/2], rp=R/2;// M 的圆
+const S=200, OX=330, OY=400;
+const X=p=>OX+p[0]*S, Y=p=>OY-p[1]*S;
+const Smax=(1+R2)/2;
+
+let alpha=8, playing=false, dir=1, showTr=true, dragging=false;
+const svg=document.getElementById('s'), panel=document.getElementById('panel'), tip=document.getElementById('tip');
+const ra=document.getElementById('ra'), va=document.getElementById('va');
+const btnPlay=document.getElementById('play'), btnTr=document.getElementById('tr'), btnMax=document.getElementById('mx');
+
+const sub=(p,q)=>[p[0]-q[0],p[1]-q[1]];
+const len=v=>Math.hypot(v[0],v[1]);
+const unit=v=>{const n=len(v)||1;return [v[0]/n,v[1]/n];};
+const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2];
+const distAC=M=>(R2-M[0]-M[1])/R2;              // AC: x+y=√2，M 在其下方
+
+function Pof(a){const t=(270-2*a)*D2R;return [O[0]+R*Math.cos(t), O[1]+R*Math.sin(t)];}
+function geom(a){
+  const P=Pof(a), M=mid(P,B);
+  const d=distAC(M);
+  const k=(M[0]+M[1]-R2)/2, F=[M[0]-k, M[1]-k];  // M 到 AC 的垂足
+  return {P,M,F,d,Sm:d,pct:d/Smax*100};
+}
+
+function render(){
+  const g=geom(alpha), {P,M,F}=g;
+  const fx='var(--foreground,#1d1f24)', mu='var(--muted-foreground,#6b7280)';
+  const GR='#2f9e63', OR='#e8833a', PU='#8b5cf6';
+  const tri=(t,fill,st,sw)=>`<polygon points="${t.map(p=>X(p)+','+Y(p)).join(' ')}" fill="${fill}"
+      stroke="${st||'none'}" stroke-width="${sw||1.4}" stroke-linejoin="round"/>`;
+  const ln=(p,q,c,w,dash)=>`<line x1="${X(p)}" y1="${Y(p)}" x2="${X(q)}" y2="${Y(q)}" stroke="${c}"
+      stroke-width="${w||1.7}" ${dash?'stroke-dasharray="'+dash+'"':''} stroke-linecap="round"/>`;
+  const dotp=(p,r,c)=>`<circle cx="${X(p)}" cy="${Y(p)}" r="${r||3.2}" fill="${c||fx}"/>`;
+  const lab=(p,t,dx,dy,anc,col,sz)=>`<text x="${(X(p)+dx).toFixed(1)}" y="${(Y(p)+dy).toFixed(1)}"
+      font-family="Times New Roman,Times,serif" font-style="italic" font-size="${sz||16}"
+      fill="${col||fx}" text-anchor="${anc||'start'}">${t}</text>`;
+  const arc=(c,rad,from,to,col,dash,w)=>{const pts=[];
+    for(let i=0;i<=60;i++){const t=(from+(to-from)*i/60)*D2R;
+      const q=[c[0]+rad*Math.cos(t), c[1]+rad*Math.sin(t)];
+      pts.push([X(q),Y(q)]);}
+    return `<polyline points="${pts.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="none"
+      stroke="${col}" stroke-width="${w||1.3}" ${dash?'stroke-dasharray="'+dash+'"':''} opacity=".85"/>`;};
+
+  let s='';
+  if(showTr){
+    s+=arc(O,R,182,266,OR,'5 5',1.5);          // P 的弧
+    s+=arc(Op,rp,182,266,GR,'5 5',1.5);        // M 的弧
+    s+=`<circle cx="${X(Op).toFixed(1)}" cy="${Y(Op).toFixed(1)}" r="${(rp*S).toFixed(1)}" fill="none"
+        stroke="${PU}" stroke-width="1.1" stroke-dasharray="2 6" opacity=".5"/>`;
+  }
+  s+=tri([A,B,Cf],'rgba(127,127,127,.05)',fx,1.6);
+  s+=tri([A,Cf,M],'rgba(47,158,99,.20)',GR,1.6);
+  s+=ln(A,Cf,fx,2.4);
+  s+=ln(M,F,GR,1.6,'6 4');
+  // O′ 到 AC 的垂线 + O′M 半径
+  { const k=(Op[0]+Op[1]-R2)/2, Fp=[Op[0]-k, Op[1]-k];
+    s+=ln(Op,Fp,PU,1.3,'3 4');
+    s+=ln(Op,M,PU,1.3,'3 4');
+    s+=dotp(Op,3.6,PU); }
+  // 最大值位置
+  { const Mp=[Op[0]-rp/R2, Op[1]-rp/R2];   // 沿远离 AC 的法线方向（不是竖直向上）
+    const k=(Mp[0]+Mp[1]-R2)/2, Fm=[Mp[0]-k, Mp[1]-k];
+    s+=`<circle cx="${X(Mp).toFixed(1)}" cy="${Y(Mp).toFixed(1)}" r="6" fill="none" stroke="${GR}" stroke-width="2"/>`;
+    s+=ln(Mp,Fm,GR,1,'2 5');
+    s+=`<text x="${(X(Mp)-16).toFixed(1)}" y="${(Y(Mp)+20).toFixed(1)}" font-size="11" fill="${GR}"
+        text-anchor="end">S 最大</text>`; }
+  // 直角符号（高 ⊥ AC，朝 M 侧）
+  { const u=unit([1,-1]), n=[-1/Math.SQRT2,-1/Math.SQRT2], k=0.1;
+    const p1=[F[0]+u[0]*k, F[1]+u[1]*k];
+    const p2=[F[0]+(u[0]+n[0])*k, F[1]+(u[1]+n[1])*k];
+    const p3=[F[0]+n[0]*k, F[1]+n[1]*k];
+    s+=`<polyline points="${X(p1)},${Y(p1)} ${X(p2)},${Y(p2)} ${X(p3)},${Y(p3)}" fill="none"
+        stroke="${mu}" stroke-width="1.1"/>`; }
+  s+=dotp(A)+dotp(B)+dotp(Cf)+dotp(P,3.8,OR)+dotp(M,3.8,GR)+dotp(F,2.4,mu);
+  s+=`<circle cx="${X(P).toFixed(1)}" cy="${Y(P).toFixed(1)}" r="14" fill="transparent"
+        data-handle="1" style="cursor:grab"/>`;
+  // 标签
+  s+=lab(A,'A',0,-14,'middle')+lab(B,'B',-11,18,'end')+lab(Cf,'C',12,18,'start');
+  { const b=unit([unit(sub(A,P))[0]+unit(sub(Cf,P))[0], unit(sub(A,P))[1]+unit(sub(Cf,P))[1]]);
+    s+=lab(P,'P',b[0]*21,-b[1]*21,'middle',OR); }
+  s+=lab(M,'M',-13,-5,'end',GR);
+  s+=lab(Op,"O′",13,16,'start',PU,14);
+  { const m=mid(M,F);
+    s+=`<text x="${(X(m)+11).toFixed(1)}" y="${(Y(m)+4).toFixed(1)}" font-size="11.5" fill="${GR}"
+        font-style="italic">d</text>`; }
+
+  svg.innerHTML=s;
+  panel.innerHTML=`
+    <div class="row"><span class="k">d(M, AC)</span><span class="v" style="color:#2f9e63">${g.d.toFixed(4)}</span></div>
+    <div class="row"><span class="k">S(△ACM)</span><span class="v" style="color:#2f9e63">${g.Sm.toFixed(4)}</span></div>
+    <div class="row"><span class="k">O′ 到 AC</span><span class="v" style="color:#8b5cf6">0.5000</span></div>
+    <div class="row"><span class="k">M 的半径</span><span class="v" style="color:#8b5cf6">${rp.toFixed(4)}</span></div>
+    <div class="row"><span class="k">S 上限</span><span class="v eq">${Smax.toFixed(4)}</span></div>
+    <div class="row"><span class="k">已达上限</span><span class="v">${g.pct.toFixed(1)}%</span></div>`;
+  ra.value=alpha; va.textContent=alpha.toFixed(1)+'°';
+  tip.innerHTML=`S = <b>${g.Sm.toFixed(4)}</b>　上限 (1+√2)/2 = <b>${Smax.toFixed(4)}</b>`;
+}
+
+function toMath(evt){
+  const pt=svg.createSVGPoint(); pt.x=evt.clientX; pt.y=evt.clientY;
+  const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  return [(q.x-OX)/S,(OY-q.y)/S];
+}
+svg.addEventListener('pointerdown',e=>{
+  if(e.target.dataset.handle){dragging=true;svg.setPointerCapture(e.pointerId);e.preventDefault();svg.style.cursor='grabbing';}
+});
+svg.addEventListener('pointermove',e=>{
+  if(!dragging)return;
+  const [x,y]=toMath(e);
+  let t=Math.atan2(y-O[1],x-O[0])/D2R; if(t<0)t+=360;
+  let a=(270-t)/2; if(a<2)a=2; if(a>44)a=44;
+  alpha=a; render();
+});
+svg.addEventListener('pointerup',()=>{dragging=false;svg.style.cursor='default';});
+svg.addEventListener('pointercancel',()=>{dragging=false;});
+
+ra.addEventListener('input',e=>{alpha=+e.target.value;render();});
+btnTr.addEventListener('click',()=>{showTr=!showTr;btnTr.classList.toggle('on',showTr);render();});
+btnMax.addEventListener('click',()=>{
+  playing=false; btnPlay.classList.remove('on'); btnPlay.textContent='▶ 动起来';
+  alpha=22.5; render();
+});
+
+let raf=null;
+btnPlay.addEventListener('click',()=>{
+  playing=!playing; btnPlay.classList.toggle('on',playing);
+  btnPlay.textContent=playing?'⏸ 暂停':'▶ 动起来';
+  if(playing){
+    const step=()=>{ if(!playing)return;
+      alpha+=0.25*dir;
+      if(alpha>44){alpha=44;dir=-1;} if(alpha<2){alpha=2;dir=1;}
+      render(); raf=requestAnimationFrame(step); };
+    raf=requestAnimationFrame(step);
+  } else if(raf) cancelAnimationFrame(raf);
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>（2）∠PAM=45°：一线三垂直 + 双中点</title>
+<style>
+  html,body{margin:0;padding:0;background:transparent;color:var(--foreground,#1d1f24);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;}
+  .hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 4px}
+  .hd h3{margin:0;font-size:15px;font-weight:600}
+  .hd .sub{font-size:12px;color:var(--muted-foreground,#6b7280)}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 224px;gap:16px;align-items:start}
+  @media (max-width:680px){.grid{grid-template-columns:1fr}}
+  svg{width:100%;height:auto;display:block;overflow:visible;touch-action:none}
+  .panel{border:1px solid var(--border,#d9dce1);border-radius:10px;padding:9px 11px;
+    background:var(--card,rgba(127,127,127,.04))}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;padding:4px 0}
+  .row + .row{border-top:1px dashed var(--border,#d9dce1)}
+  .k{color:var(--muted-foreground,#6b7280)}
+  .v{font-variant-numeric:tabular-nums;font-weight:650;font-size:13px}
+  .eq{color:#2f9e63;font-weight:650}
+  .ctl{margin-top:8px;display:grid;grid-template-columns:64px minmax(0,1fr) 50px;gap:7px 9px;align-items:center;font-size:12px}
+  .ctl input[type=range]{width:100%;accent-color:var(--accent,#3b82f6)}
+  .ctl .num{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted-foreground,#6b7280);font-size:11.5px}
+  .btns{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center}
+  button{font:inherit;font-size:12px;padding:5px 11px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--border,#d9dce1);background:transparent;color:inherit}
+  button.on{background:var(--accent,#3b82f6);border-color:transparent;color:#fff}
+  .step{margin-top:10px;font-size:11.5px;line-height:1.7;color:var(--muted-foreground,#6b7280)}
+  .step b{color:var(--foreground,#1d1f24)}
+  .step .n{display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;border-radius:50%;
+    background:var(--border,#d9dce1);color:var(--foreground,#1d1f24);font-size:10px;margin-right:4px}
+  .tip{font-size:11.5px;color:var(--muted-foreground,#6b7280);margin:6px 0 0}
+</style>
+</head>
+<body>
+  <div class="hd">
+    <h3>（2）一线三垂直 + 双中点：∠PAM=45°</h3>
+    <span class="sub">A 在上、BC 水平，与原卷一致；拖 P 或滑杆</span>
+  </div>
+
+  <div class="grid">
+    <div>
+      <svg id="s" viewBox="0 0 700 480" role="img" aria-label="一线三垂直与双中点证明图"></svg>
+      <div class="ctl">
+        <label for="ra">∠PAC</label>
+        <input id="ra" type="range" min="2" max="44" step="0.5" value="18">
+        <span class="num" id="va">18.0°</span>
+      </div>
+      <div class="btns">
+        <button id="play">▶ 动起来</button>
+        <button id="b1" class="on">两条垂线 BH、CX</button>
+        <button id="b2" class="on">中点 M、N 与中位线</button>
+        <span class="tip" id="tip"></span>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel" id="panel"></div>
+      <div class="step">
+        <div><span class="n">1</span><b>一线三垂直</b>：BH⊥AP，CX⊥AP。<br>
+          ∠APC=135° ⟹ ∠CPX=45° ⟹ Rt△PCX 中 <b>PX=CX</b>；<br>
+          又 ∠BAH=∠ACX=90°−α，AB=AC ⟹ △ABH≌△CAX<br>
+          ⟹ <b>AH=CX=PX，BH=AX=AP+AH</b>。</div>
+        <div style="margin-top:6px"><span class="n">2</span><b>双中点</b>：M 是 PB 中点，N 是 PH 中点<br>
+          ⟹ MN∥BH，MN=½BH；<br>
+          AN=½(AH+AP)=½BH（H 落在 P 外侧时同式）。</div>
+        <div style="margin-top:6px"><span class="n">3</span>MN∥BH⊥AP ⟹ <b>AN=MN 且 MN⊥AP</b><br>
+          ⟹ △AMN 是等腰直角三角形 ⟹ <b>∠PAM=45°</b>。</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const R2=Math.SQRT2, D2R=Math.PI/180;
+const A=[0,R2], B=[-R2,0], Cf=[R2,0];      // A 在上，BC 水平（同原卷）
+const O=[R2,R2], R=R2;                      // P 所在圆的圆心（ABC 的外侧顶点）
+const S=200, OX=330, OY=370;
+const X=p=>OX+p[0]*S, Y=p=>OY-p[1]*S;
+
+let alpha=18, playing=false, dir=1, show1=true, show2=true, dragging=false;
+const svg=document.getElementById('s'), panel=document.getElementById('panel'), tip=document.getElementById('tip');
+const ra=document.getElementById('ra'), va=document.getElementById('va');
+const btnPlay=document.getElementById('play'), b1=document.getElementById('b1'), b2=document.getElementById('b2');
+
+const sub=(p,q)=>[p[0]-q[0],p[1]-q[1]];
+const len=v=>Math.hypot(v[0],v[1]);
+const unit=v=>{const n=len(v)||1;return [v[0]/n,v[1]/n];};
+const dot=(u,v)=>u[0]*v[0]+u[1]*v[1];
+const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2];
+
+function geom(){
+  const P=[O[0]+R*Math.cos((270-2*alpha)*D2R), O[1]+R*Math.sin((270-2*alpha)*D2R)];
+  const u=[Math.cos((-45-alpha)*D2R), Math.sin((-45-alpha)*D2R)];   // A→P 方向
+  const proj=q=>{const k=dot(sub(q,A),u);return [A[0]+u[0]*k, A[1]+u[1]*k];};
+  const H=proj(B), Xp=proj(Cf);
+  const N=mid(H,P), M=mid(P,B);
+  const d=(p,q)=>len(sub(p,q));
+  const ang=(p,q)=>Math.acos(Math.max(-1,Math.min(1,dot(unit(p),unit(q)))))/D2R;
+  return {P,H,Xp,N,M,
+    AH:d(A,H), CX:d(Cf,Xp), PX:d(P,Xp), BH:d(B,H),
+    AX:d(A,Xp), AN:d(A,N), MN:d(M,N), AP:d(A,P),
+    PAM:ang(sub(P,A),sub(M,A))};
+}
+
+function render(){
+  const g=geom(), {P,H,N,M}=g, Xp=g.Xp;
+  const fx='var(--foreground,#1d1f24)', mu='var(--muted-foreground,#6b7280)';
+  const GR='#2f9e63', BL='var(--accent,#3b82f6)', OR='#e8833a', PU='#8b5cf6', PU2='#c084fc';
+  const tri=(t,fill,st,sw)=>`<polygon points="${t.map(p=>X(p)+','+Y(p)).join(' ')}" fill="${fill}"
+      stroke="${st||'none'}" stroke-width="${sw||1.4}" stroke-linejoin="round"/>`;
+  const ln=(p,q,c,w,dash)=>`<line x1="${X(p)}" y1="${Y(p)}" x2="${X(q)}" y2="${Y(q)}" stroke="${c}"
+      stroke-width="${w||1.7}" ${dash?'stroke-dasharray="'+dash+'"':''} stroke-linecap="round"/>`;
+  const dotp=(p,r,c)=>`<circle cx="${X(p)}" cy="${Y(p)}" r="${r||3.2}" fill="${c||fx}"/>`;
+  const lab=(p,t,dx,dy,anc,col)=>`<text x="${(X(p)+dx).toFixed(1)}" y="${(Y(p)+dy).toFixed(1)}"
+      font-family="Times New Roman,Times,serif" font-style="italic" font-size="16"
+      fill="${col||fx}" text-anchor="${anc||'start'}">${t}</text>`;
+  const rightAng=(p,u1,u2,k)=>{const a=[p[0]+u1[0]*k,p[1]+u1[1]*k],b=[p[0]+(u1[0]+u2[0])*k,p[1]+(u1[1]+u2[1])*k],c=[p[0]+u2[0]*k,p[1]+u2[1]*k];
+    return `<polyline points="${X(a)},${Y(a)} ${X(b)},${Y(b)} ${X(c)},${Y(c)}" fill="none" stroke="${mu}" stroke-width="1.2"/>`;};
+  const ticks=(p,q,c)=>{const u=unit(sub(q,p)),nv=[-u[1],u[0]],m=[(p[0]+q[0])/2,(p[1]+q[1])/2];
+    const a=[m[0]-nv[0]*0.065,m[1]-nv[1]*0.065],b=[m[0]+nv[0]*0.065,m[1]+nv[1]*0.065];
+    return `<line x1="${X(a)}" y1="${Y(a)}" x2="${X(b)}" y2="${Y(b)}" stroke="${c}" stroke-width="1.6"/>`;};
+  const arcAt=(p,u1,u2,r,col,label,lr)=>{
+    let a0=Math.atan2(u1[1],u1[0]),a1=Math.atan2(u2[1],u2[0]);
+    let d=a1-a0; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    const pts=[];
+    for(let i=0;i<=16;i++){const t=a0+d*i/16;
+      pts.push((X(p)+Math.cos(t)*r*S).toFixed(1)+','+(Y(p)-Math.sin(t)*r*S).toFixed(1));}
+    let s=`<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="1.2"/>`;
+    if(label){const am=a0+d/2;
+      const k=(lr||1.35);
+      s+=`<text x="${(X(p)+Math.cos(am)*r*S*k).toFixed(1)}" y="${(Y(p)-Math.sin(am)*r*S*k+4).toFixed(1)}"
+          font-size="11" fill="${col}" text-anchor="middle">${label}</text>`;}
+    return s;
+  };
+
+  let s='';
+  if(show1){
+    s+=tri([A,B,H],'rgba(139,92,246,.15)','none',0);
+    s+=tri([A,Cf,Xp],'rgba(192,132,252,.14)','none',0);
+    s+=ln(B,H,PU,1.6,'7 4')+ln(Cf,Xp,PU2,1.6,'7 4');
+    s+=rightAng(H,unit(sub(A,H)),unit(sub(B,H)),0.11);
+    s+=rightAng(Xp,unit(sub(A,Xp)),unit(sub(Cf,Xp)),0.11);
+    s+=ticks(A,H,PU)+ticks(Xp,Cf,PU2);
+  }
+  if(show2){
+    s+=tri([A,N,M],'rgba(47,158,99,.20)',GR,1.8);
+    s+=ln(N,M,GR,1.8,'6 4');
+    s+=ticks(A,N,GR)+ticks(N,M,GR);
+  }
+  s+=tri([A,B,Cf],'none',fx,1.6);
+  s+=ln(B,P,fx,1.35);           // 题目原线 PB
+  s+=ln(A,Xp,OR,2.1);           // AP 延长到 X
+  s+=rightAng(A,unit(sub(B,A)),unit(sub(Cf,A)),0.14);
+  s+=dotp(A)+dotp(B)+dotp(Cf)+dotp(P,3.8,OR);
+  if(show1) s+=dotp(H,3.2,PU)+dotp(Xp,3.2,PU2);
+  if(show2) s+=dotp(M,3.4,BL)+dotp(N,3.4,BL);
+  s+=`<circle cx="${X(P).toFixed(1)}" cy="${Y(P).toFixed(1)}" r="14" fill="transparent"
+        data-handle="1" style="cursor:grab"/>`;
+  // 标签
+  s+=lab(A,'A',0,-14,'middle')+lab(B,'B',-11,18,'end')+lab(Cf,'C',12,18,'start');
+  { const b=unit([unit(sub(A,P))[0]+unit(sub(Cf,P))[0], unit(sub(A,P))[1]+unit(sub(Cf,P))[1]]);
+    s+=lab(P,'P',b[0]*21,-b[1]*21,'middle',OR); }
+  if(show1){
+    s+=lab(H,'H',10,-11,'start',PU);
+    s+=lab(Xp,'X',0,22,'middle',PU2);
+  }
+  if(show2){
+    s+=lab(M,'M',-12,-9,'end',BL);
+    s+=lab(N,'N',12,-7,'start',BL);
+  }
+  // ∠PAC = α
+  s+=arcAt(A, unit(sub(Cf,A)), unit(sub(P,A)), 0.45, OR, 'α', 1.9);
+  // ∠PAM = 45°
+  if(show2) s+=arcAt(A, unit(sub(P,A)), unit(sub(M,A)), 0.72, GR, '45°');
+
+  svg.innerHTML=s;
+  panel.innerHTML=`
+    <div class="row"><span class="k">AH</span><span class="v" style="color:#8b5cf6">${g.AH.toFixed(4)}</span></div>
+    <div class="row"><span class="k">CX</span><span class="v" style="color:#8b5cf6">${g.CX.toFixed(4)}</span></div>
+    <div class="row"><span class="k">PX</span><span class="v" style="color:#8b5cf6">${g.PX.toFixed(4)}</span></div>
+    <div class="row"><span class="k">BH</span><span class="v">${g.BH.toFixed(4)}</span></div>
+    <div class="row"><span class="k">AX=AP+AH</span><span class="v">${g.AX.toFixed(4)}</span></div>
+    <div class="row"><span class="k">AN</span><span class="v" style="color:#2f9e63">${g.AN.toFixed(4)}</span></div>
+    <div class="row"><span class="k">MN</span><span class="v" style="color:#2f9e63">${g.MN.toFixed(4)}</span></div>
+    <div class="row"><span class="k">∠PAM</span><span class="v eq">${g.PAM.toFixed(3)}°</span></div>`;
+  ra.value=alpha; va.textContent=alpha.toFixed(1)+'°';
+  tip.innerHTML=`AH−CX 差 <b>${(g.AH-g.CX).toExponential(1)}</b>　AN−MN 差 <b>${(g.AN-g.MN).toExponential(1)}</b>`;
+}
+
+function toMath(evt){
+  const pt=svg.createSVGPoint(); pt.x=evt.clientX; pt.y=evt.clientY;
+  const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  return [(q.x-OX)/S,(OY-q.y)/S];
+}
+svg.addEventListener('pointerdown',e=>{
+  if(e.target.dataset.handle){dragging=true;svg.setPointerCapture(e.pointerId);e.preventDefault();svg.style.cursor='grabbing';}
+});
+svg.addEventListener('pointermove',e=>{
+  if(!dragging)return;
+  const [x,y]=toMath(e);
+  let t=Math.atan2(y-O[1],x-O[0])/D2R; if(t<0)t+=360;
+  let a=(270-t)/2; if(a<2)a=2; if(a>44)a=44;
+  alpha=a; render();
+});
+svg.addEventListener('pointerup',()=>{dragging=false;svg.style.cursor='default';});
+svg.addEventListener('pointercancel',()=>{dragging=false;});
+
+ra.addEventListener('input',e=>{alpha=+e.target.value;render();});
+b1.addEventListener('click',()=>{show1=!show1;b1.classList.toggle('on',show1);render();});
+b2.addEventListener('click',()=>{show2=!show2;b2.classList.toggle('on',show2);render();});
+
+let raf=null;
+btnPlay.addEventListener('click',()=>{
+  playing=!playing; btnPlay.classList.toggle('on',playing);
+  btnPlay.textContent=playing?'⏸ 暂停':'▶ 动起来';
+  if(playing){
+    const step=()=>{ if(!playing)return;
+      alpha+=0.28*dir;
+      if(alpha>44){alpha=44;dir=-1;} if(alpha<2){alpha=2;dir=1;}
+      render(); raf=requestAnimationFrame(step); };
+    raf=requestAnimationFrame(step);
+  } else if(raf) cancelAnimationFrame(raf);
+});
+
+render();
+</script>
+</body>
+</html>
