@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>（2）∠PAM=45°：手拉手（方法二）</title>
+<style>
+  html,body{margin:0;padding:0;background:transparent;color:var(--foreground,#1d1f24);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;}
+  .hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 4px}
+  .hd h3{margin:0;font-size:15px;font-weight:600}
+  .hd .sub{font-size:12px;color:var(--muted-foreground,#6b7280)}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 212px;gap:16px;align-items:start}
+  @media (max-width:680px){.grid{grid-template-columns:1fr}}
+  svg{width:100%;height:auto;display:block;overflow:visible;touch-action:none}
+  .panel{border:1px solid var(--border,#d9dce1);border-radius:10px;padding:9px 11px;
+    background:var(--card,rgba(127,127,127,.04))}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;padding:4px 0}
+  .row + .row{border-top:1px dashed var(--border,#d9dce1)}
+  .k{color:var(--muted-foreground,#6b7280)}
+  .v{font-variant-numeric:tabular-nums;font-weight:650;font-size:13px}
+  .eq{color:#2f9e63;font-weight:650}
+  .ctl{margin-top:8px;display:grid;grid-template-columns:64px minmax(0,1fr) 50px;gap:7px 9px;align-items:center;font-size:12px}
+  .ctl input[type=range]{width:100%;accent-color:var(--accent,#3b82f6)}
+  .ctl .num{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted-foreground,#6b7280);font-size:11.5px}
+  .btns{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center}
+  button{font:inherit;font-size:12px;padding:5px 11px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--border,#d9dce1);background:transparent;color:inherit}
+  button.on{background:var(--accent,#3b82f6);border-color:transparent;color:#fff}
+  .step{margin-top:10px;font-size:11.5px;line-height:1.7;color:var(--muted-foreground,#6b7280)}
+  .step b{color:var(--foreground,#1d1f24)}
+  .step .n{display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;border-radius:50%;
+    background:var(--border,#d9dce1);color:var(--foreground,#1d1f24);font-size:10px;margin-right:4px}
+  .tip{font-size:11.5px;color:var(--muted-foreground,#6b7280);margin:6px 0 0}
+</style>
+</head>
+<body>
+  <div class="hd">
+    <h3>（2）方法二：手拉手 —— 补全等腰 Rt△AEP</h3>
+    <span class="sub">A 在上、BC 水平；拖 P 或滑杆</span>
+  </div>
+
+  <div class="grid">
+    <div>
+      <svg id="s" viewBox="0 0 700 520" role="img" aria-label="手拉手证明图"></svg>
+      <div class="ctl">
+        <label for="ra">∠PAC</label>
+        <input id="ra" type="range" min="2" max="44" step="0.5" value="18">
+        <span class="num" id="va">18.0°</span>
+      </div>
+      <div class="btns">
+        <button id="play">▶ 动起来</button>
+        <button id="b1" class="on">辅助线 AE、BE、EP、EM</button>
+        <button id="b2" class="on">全等三角形</button>
+        <span class="tip" id="tip"></span>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel" id="panel"></div>
+      <div class="step">
+        <div><span class="n">1</span><b>补形</b>：以 AP 为直角边作等腰 Rt△AEP<br>
+          （AE=AP，∠EAP=90°）。△ABC 与 △AEP 共顶点 A ⟹ 手拉手。</div>
+        <div style="margin-top:6px"><span class="n">2</span>AE=AP，AB=AC，∠EAB=∠PAC=α<br>
+          ⟹ <b>△AEB ≌ △APC（SAS）</b> ⟹ ∠AEB=∠APC=135°。</div>
+        <div style="margin-top:6px"><span class="n">3</span>∠AEP=45° ⟹ ∠BEP=135°−45°=<b>90°</b>。<br>
+          Rt△BEP 中 M 是 BP 中点 ⟹ <b>EM=MP</b>。</div>
+        <div style="margin-top:6px"><span class="n">4</span>AE=AP，EM=PM，AM 公共<br>
+          ⟹ △AEM≌△APM（SSS）⟹ AM 平分 ∠EAP<br>
+          ⟹ <b>∠PAM=45°</b>。</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const R2=Math.SQRT2, D2R=Math.PI/180;
+const A=[0,R2], B=[-R2,0], Cf=[R2,0];
+const O=[R2,R2], R=R2;
+const S=200, OX=350, OY=470;
+const X=p=>OX+p[0]*S, Y=p=>OY-p[1]*S;
+
+let alpha=18, playing=false, dir=1, show1=true, show2=true, dragging=false;
+const svg=document.getElementById('s'), panel=document.getElementById('panel'), tip=document.getElementById('tip');
+const ra=document.getElementById('ra'), va=document.getElementById('va');
+const btnPlay=document.getElementById('play'), b1=document.getElementById('b1'), b2=document.getElementById('b2');
+
+const sub=(p,q)=>[p[0]-q[0],p[1]-q[1]];
+const len=v=>Math.hypot(v[0],v[1]);
+const unit=v=>{const n=len(v)||1;return [v[0]/n,v[1]/n];};
+const dot=(u,v)=>u[0]*v[0]+u[1]*v[1];
+const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2];
+
+function inter(p1,p2,p3,p4){
+  const d=(p1[0]-p2[0])*(p3[1]-p4[1])-(p1[1]-p2[1])*(p3[0]-p4[0]);
+  if(Math.abs(d)<1e-12) return null;
+  const a=p1[0]*p2[1]-p1[1]*p2[0], b=p3[0]*p4[1]-p3[1]*p4[0];
+  return [(a*(p3[0]-p4[0])-(p1[0]-p2[0])*b)/d, (a*(p3[1]-p4[1])-(p1[1]-p2[1])*b)/d];
+}
+
+function geom(){
+  const P=[O[0]+R*Math.cos((270-2*alpha)*D2R), O[1]+R*Math.sin((270-2*alpha)*D2R)];
+  // E = A + R90cw(P-A)
+  const dx=P[0]-A[0], dy=P[1]-A[1];
+  const E=[A[0]+dy, A[1]-dx];
+  const M=mid(P,B);
+  const N=inter(A,M,E,P) || mid(E,P);
+  const ang=(p,q)=>Math.acos(Math.max(-1,Math.min(1,dot(unit(p),unit(q)))))/D2R;
+  return {P,E,M,N,
+    APC:ang(sub(A,P),sub(Cf,P)),
+    AEB:ang(sub(A,E),sub(B,E)),
+    BEP:ang(sub(B,E),sub(P,E)),
+    PAM:ang(sub(P,A),sub(M,A)),
+    EAP:ang(sub(E,A),sub(P,A)),
+    AE:len(sub(E,A)), AP:len(sub(P,A)),
+    EM:len(sub(E,M)), PM:len(sub(P,M))};
+}
+
+function render(){
+  const g=geom(), {P,E,M,N}=g;
+  const fx='var(--foreground,#1d1f24)', mu='var(--muted-foreground,#6b7280)';
+  const GR='#2f9e63', BL='var(--accent,#3b82f6)', OR='#e8833a', RD='#d9534f';
+  const tri=(t,fill,st,sw)=>`<polygon points="${t.map(p=>X(p)+','+Y(p)).join(' ')}" fill="${fill}"
+      stroke="${st||'none'}" stroke-width="${sw||1.4}" stroke-linejoin="round"/>`;
+  const ln=(p,q,c,w,dash)=>`<line x1="${X(p)}" y1="${Y(p)}" x2="${X(q)}" y2="${Y(q)}" stroke="${c}"
+      stroke-width="${w||1.7}" ${dash?'stroke-dasharray="'+dash+'"':''} stroke-linecap="round"/>`;
+  const dotp=(p,r,c)=>`<circle cx="${X(p)}" cy="${Y(p)}" r="${r||3.2}" fill="${c||fx}"/>`;
+  const lab=(p,t,dx,dy,anc,col,sz)=>`<text x="${(X(p)+dx).toFixed(1)}" y="${(Y(p)+dy).toFixed(1)}"
+      font-family="Times New Roman,Times,serif" font-style="italic" font-size="${sz||16}"
+      fill="${col||fx}" text-anchor="${anc||'start'}">${t}</text>`;
+  const rightAng=(p,u1,u2,k)=>{const a=[p[0]+u1[0]*k,p[1]+u1[1]*k],b=[p[0]+(u1[0]+u2[0])*k,p[1]+(u1[1]+u2[1])*k],c=[p[0]+u2[0]*k,p[1]+u2[1]*k];
+    return `<polyline points="${X(a)},${Y(a)} ${X(b)},${Y(b)} ${X(c)},${Y(c)}" fill="none" stroke="${mu}" stroke-width="1.15"/>`;};
+
+  let s='';
+  // 两个全等三角形
+  if(show2){
+    s+=tri([A,E,B],'rgba(232,131,58,.14)',OR,1.3);
+    s+=tri([A,P,Cf],'rgba(59,130,246,.13)',BL,1.3);
+  }
+  // 辅助等腰直角三角形 AEP
+  if(show1) s+=tri([A,E,P],'rgba(217,83,79,.07)',RD,1.2);
+  // 原三角形
+  s+=tri([A,B,Cf],'none',fx,1.7);
+  // 题目原线
+  s+=ln(B,P,fx,1.35)+ln(P,Cf,fx,1.35)+ln(A,P,fx,1.2);
+  // 辅助线
+  if(show1){
+    s+=ln(A,E,RD,1.8,'6 4')+ln(E,B,RD,1.8,'6 4')+ln(E,P,RD,1.8,'6 4');
+    s+=ln(E,M,GR,1.8,'6 4');
+  }
+  // AM
+  s+=ln(A,M,BL,2.1);
+  // 直角符号
+  s+=rightAng(A,unit(sub(B,A)),unit(sub(Cf,A)),0.15);
+  if(show1){
+    s+=rightAng(E,unit(sub(B,E)),unit(sub(P,E)),0.12);
+    s+=rightAng(A,unit(sub(E,A)),unit(sub(P,A)),0.11);
+  }
+  // 点
+  s+=dotp(A)+dotp(B)+dotp(Cf)+dotp(P,3.8,BL)+dotp(M,3.4,BL);
+  if(show1) s+=dotp(E,3.8,RD);
+  if(show1&&show2) s+=dotp(N,3,mu);
+  // 拖拽热区
+  s+=`<circle cx="${X(P).toFixed(1)}" cy="${Y(P).toFixed(1)}" r="14" fill="transparent"
+        data-handle="1" style="cursor:grab"/>`;
+  // 标签
+  s+=lab(A,'A',0,-14,'middle')+lab(B,'B',-11,18,'end')+lab(Cf,'C',12,18,'start');
+  { const b=unit([unit(sub(A,P))[0]+unit(sub(Cf,P))[0], unit(sub(A,P))[1]+unit(sub(Cf,P))[1]]);
+    s+=lab(P,'P',b[0]*21,-b[1]*21,'middle',BL); }
+  s+=lab(M,'M',13,14,'start',BL);
+  if(show1) s+=lab(E,'E',-12,-6,'end',RD);
+  if(show1&&show2) s+=lab(N,'N',13,19,'start',mu,13);
+  // ∠EAB 也用 α 标出来（手拉手的对应角）
+  if(show1){
+    const u1=unit(sub(E,A)),u2=unit(sub(B,A)),r=0.30;
+    let a0=Math.atan2(u1[1],u1[0]),a1=Math.atan2(u2[1],u2[0]);
+    let d=a1-a0; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    const pts=[];
+    for(let i=0;i<=10;i++){const t=a0+d*i/10;pts.push((X(A)+Math.cos(t)*r*S).toFixed(1)+','+(Y(A)-Math.sin(t)*r*S).toFixed(1));}
+    s+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${OR}" stroke-width="1.1"/>`;
+    const am=a0+d/2;
+    s+=`<text x="${(X(A)+Math.cos(am)*r*S*1.55).toFixed(1)}" y="${(Y(A)-Math.sin(am)*r*S*1.55+4).toFixed(1)}"
+        font-size="10.5" fill="${OR}" text-anchor="middle">α</text>`;
+  }
+  // α 角标
+  { const u1=unit(sub(Cf,A)),u2=unit(sub(P,A)),r=0.42;
+    let a0=Math.atan2(u1[1],u1[0]),a1=Math.atan2(u2[1],u2[0]);
+    let d=a1-a0; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    const pts=[];
+    for(let i=0;i<=12;i++){const t=a0+d*i/12;pts.push((X(A)+Math.cos(t)*r*S).toFixed(1)+','+(Y(A)-Math.sin(t)*r*S).toFixed(1));}
+    s+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${OR}" stroke-width="1.1"/>`;
+    const am=a0+d/2;
+    s+=`<text x="${(X(A)+Math.cos(am)*r*S*1.6).toFixed(1)}" y="${(Y(A)-Math.sin(am)*r*S*1.6+4).toFixed(1)}"
+        font-size="11" fill="${OR}" text-anchor="middle">α</text>`; }
+
+  svg.innerHTML=s;
+  panel.innerHTML=`
+    <div class="row"><span class="k">∠APC</span><span class="v">${g.APC.toFixed(2)}°</span></div>
+    <div class="row"><span class="k">∠AEB</span><span class="v" style="color:#e8833a">${g.AEB.toFixed(2)}°</span></div>
+    <div class="row"><span class="k">∠BEP</span><span class="v eq">${g.BEP.toFixed(2)}°</span></div>
+    <div class="row"><span class="k">AE / AP</span><span class="v">${g.AE.toFixed(4)} / ${g.AP.toFixed(4)}</span></div>
+    <div class="row"><span class="k">EM / PM</span><span class="v" style="color:#2f9e63">${g.EM.toFixed(4)} / ${g.PM.toFixed(4)}</span></div>
+    <div class="row"><span class="k">∠PAM</span><span class="v eq">${g.PAM.toFixed(3)}°</span></div>`;
+  ra.value=alpha; va.textContent=alpha.toFixed(1)+'°';
+  tip.innerHTML=`AE−AP 差 <b>${(g.AE-g.AP).toExponential(1)}</b>　EM−PM 差 <b>${(g.EM-g.PM).toExponential(1)}</b>`;
+}
+
+function toMath(evt){
+  const pt=svg.createSVGPoint(); pt.x=evt.clientX; pt.y=evt.clientY;
+  const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  return [(q.x-OX)/S,(OY-q.y)/S];
+}
+svg.addEventListener('pointerdown',e=>{
+  if(e.target.dataset.handle){dragging=true;svg.setPointerCapture(e.pointerId);e.preventDefault();svg.style.cursor='grabbing';}
+});
+svg.addEventListener('pointermove',e=>{
+  if(!dragging)return;
+  const [x,y]=toMath(e);
+  let t=Math.atan2(y-O[1],x-O[0])/D2R; if(t<0)t+=360;
+  let a=(270-t)/2; if(a<2)a=2; if(a>44)a=44;
+  alpha=a; render();
+});
+svg.addEventListener('pointerup',()=>{dragging=false;svg.style.cursor='default';});
+svg.addEventListener('pointercancel',()=>{dragging=false;});
+
+ra.addEventListener('input',e=>{alpha=+e.target.value;render();});
+b1.addEventListener('click',()=>{show1=!show1;b1.classList.toggle('on',show1);render();});
+b2.addEventListener('click',()=>{show2=!show2;b2.classList.toggle('on',show2);render();});
+
+let raf=null;
+btnPlay.addEventListener('click',()=>{
+  playing=!playing; btnPlay.classList.toggle('on',playing);
+  btnPlay.textContent=playing?'⏸ 暂停':'▶ 动起来';
+  if(playing){
+    const step=()=>{ if(!playing)return;
+      alpha+=0.28*dir;
+      if(alpha>44){alpha=44;dir=-1;} if(alpha<2){alpha=2;dir=1;}
+      render(); raf=requestAnimationFrame(step); };
+    raf=requestAnimationFrame(step);
+  } else if(raf) cancelAnimationFrame(raf);
+});
+
+render();
+</script>
+</body>
+</html>
