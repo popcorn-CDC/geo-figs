@@ -66,13 +66,23 @@
   details.card>summary:before{content:"▸";display:inline-block;width:14px;color:var(--muted,#9aa0a6)}
   details.card[open]>summary:before{content:"▾"}
   details.card>summary b{color:var(--blue,#2f6fed);margin-right:4px}
-  details.card .body{padding:0 14px 13px;font-size:13.5px;line-height:1.85}
-  .body p{margin:7px 0}
-  .body .step{margin:8px 0;padding-left:2px}
+  details.card .body{padding:0 14px 13px;font-size:13.5px;line-height:2.05}
+  .body p{margin:8px 0}
+  .body .step{margin:9px 0;padding-left:2px}
   .body .why{background:rgba(47,111,237,.06);border-left:3px solid var(--blue,#2f6fed);
     padding:8px 11px;border-radius:0 8px 8px 0;margin:10px 0}
   .body em{font-style:normal;color:#e8833a;font-weight:650}
   .body .mq{font-family:"Times New Roman",Times,serif;font-style:italic}
+  /* 手写体式的公式 */
+  .mtx{font-family:"Times New Roman",Times,serif;font-style:italic;white-space:nowrap;
+    font-size:1.06em;letter-spacing:.2px}
+  .mtx sup{font-size:.66em;vertical-align:.5em;font-style:normal}
+  .frac{display:inline-block;vertical-align:-.42em;text-align:center;font-size:.94em;
+    line-height:1.1;margin:0 .18em}
+  .frac>span{display:block;padding:0 .2em}
+  .frac>span:first-child{border-bottom:1px solid currentColor;padding-bottom:.05em}
+  .sqrt .rad{border-top:1px solid currentColor;padding:0 .13em 0 .05em}
+  .up{font-style:normal}
   .hidden{display:none}
 </style>
 </head>
@@ -81,7 +91,7 @@
 <div class="wrap">
   <div class="head">
     <div class="ttl">27 题（1）· 求 ∠AFC</div>
-    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121a</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121b</div>
   </div>
 
   <div class="stage">
@@ -95,31 +105,31 @@
 
   <details class="card" open>
     <summary><b>①</b> 这题的思路从哪里来</summary>
-    <div class="body"><p>题目只给了一个会变的角 <em>α</em>，问的却是一个角的大小 —— 这说明答案一定<em>与 α 无关</em>，α 在计算中会被消掉。</p>
-<p>能消掉 α 的地方只有一处：<em>三角形内角和</em>。所以只要把 △ACF 的三个内角都用 α 表示，加起来必然剩 45°。</p>
+    <div class="body"><p>题目只给了一个会变的角 <span class="mtx">α</span>，问的却是一个角的大小 —— 这说明答案一定<em>与 <span class="mtx">α</span> 无关</em>，<span class="mtx">α</span> 在计算中会被消掉。</p>
+<p>能消掉 <span class="mtx">α</span> 的地方只有一处：<em>三角形内角和</em>。所以只要把 <span class="mtx">△ ACF</span> 的三个内角都用 <span class="mtx">α</span> 表示，加起来必然剩 <span class="mtx">45°</span>。</p>
 <div class="why">三条角分别从哪来：<br>
-· ∠ACF ← 等腰 △ABC 的底角（B、C、F 共线，正好是同一个角）；<br>
-· ∠CAF ← 旋转：CA=CD 让 △ACD 变成等腰，顶角 90°−α，底角就是 45°+α/2（A、D、F 共线，所以 ∠CAF 就是它）；<br>
-· ∠AFC ← 前两个算出来，用它收尾。</div>
+· <span class="mtx">∠ ACF</span> ← 等腰 <span class="mtx">△ ABC</span> 的底角（<span class="mtx">B</span>、<span class="mtx">C</span>、<span class="mtx">F</span> 共线，正好是同一个角）；<br>
+· <span class="mtx">∠ CAF</span> ← 旋转：<span class="mtx">CA=CD</span> 让 <span class="mtx">△ ACD</span> 变成等腰，顶角 <span class="mtx">90°-α</span>，底角就是 <span class="mtx">45°+<span class="frac"><span>α</span><span>2</span></span></span>（<span class="mtx">A</span>、<span class="mtx">D</span>、<span class="mtx">F</span> 共线，所以 <span class="mtx">∠ CAF</span> 就是它）；<br>
+· <span class="mtx">∠ AFC</span> ← 前两个算出来，用它收尾。</div>
 <p>这就是这道题的"模型"：<em>等腰 + 旋转 ⟹ 用底角公式把顶角劈成两半</em>。</p>
-<p class="hint">图上玫红色的三条边 AB、AC、CD 是同一长度族（都等于 AC）。</p></div>
+<p class="hint">图上玫红色的三条边 <span class="mtx">AB</span>、<span class="mtx">AC</span>、<span class="mtx">CD</span> 是同一长度族（都等于 <span class="mtx">AC</span>）。</p></div>
   </details>
   <details class="card">
     <summary><b>②</b> 规范解答</summary>
-    <div class="body"><div class="step">① ∵ AB=AC，∠BAC=α，∴ ∠ABC=∠ACB=(180°−α)/2=90°−α/2．<br>
-∵ B、C、F 共线，∴ <span class="mq">∠ACF</span>=90°−α/2．</div>
-<div class="step">② ∵ CA 绕点 C 旋转得到 CD，∴ CA=CD，∠ACD=90°−α．<br>
-∴ ∠CAD=∠CDA=[180°−(90°−α)]/2=<span class="mq">45°+α/2</span>．<br>
-∵ F 在射线 AD 上（D 在 A、F 之间），∴ <span class="mq">∠CAF</span>=45°+α/2．</div>
-<div class="step">③ 在 △ACF 中，<br>
-∠AFC=180°−∠CAF−∠ACF=180°−(45°+α/2)−(90°−α/2)=<em>45°</em>．</div>
-<div class="why">结论：∠AFC=45°，与 α 无关。</div></div>
+    <div class="body"><div class="step">① ∵ <span class="mtx">AB=AC</span>，<span class="mtx">∠ BAC=α</span>，∴ <span class="mtx">∠ ABC=∠ ACB=<span class="frac"><span>180°-α</span><span>2</span></span>=90°-<span class="frac"><span>α</span><span>2</span></span></span>．<br>
+∵ <span class="mtx">B</span>、<span class="mtx">C</span>、<span class="mtx">F</span> 共线，∴ <span class="mtx">∠ ACF=90°-<span class="frac"><span>α</span><span>2</span></span></span>．</div>
+<div class="step">② ∵ <span class="mtx">CA</span> 绕点 <span class="mtx">C</span> 旋转得到 <span class="mtx">CD</span>，∴ <span class="mtx">CA=CD</span>，<span class="mtx">∠ ACD=90°-α</span>．<br>
+∴ <span class="mtx">∠ CAD=∠ CDA=<span class="frac"><span>180°-(90°-α)</span><span>2</span></span>=45°+<span class="frac"><span>α</span><span>2</span></span></span>．<br>
+∵ <span class="mtx">F</span> 在射线 <span class="mtx">AD</span> 上（<span class="mtx">D</span> 在 <span class="mtx">A</span>、<span class="mtx">F</span> 之间），∴ <span class="mtx">∠ CAF=45°+<span class="frac"><span>α</span><span>2</span></span></span>．</div>
+<div class="step">③ 在 <span class="mtx">△ ACF</span> 中，<br>
+<span class="mtx">∠ AFC=180°-(45°+<span class="frac"><span>α</span><span>2</span></span>)-(90°-<span class="frac"><span>α</span><span>2</span></span>)=45°</span>．</div>
+<div class="why">结论：<span class="mtx">∠ AFC=45°</span>，与 <span class="mtx">α</span> 无关。</div></div>
   </details>
   <details class="card">
     <summary><b>③</b> 易错点</summary>
-    <div class="body"><p>· 漏写"B、C、F 共线"：∠ACF=90°−α/2 就没有出处，第③步接不上。</p>
-<p>· 把旋转角当成 90°：题目转的是 <em>90°−α</em>，所以 ∠ACD=90°−α，不是 90°。</p>
-<p>· 最后没把 α 消干净：只要答案里还剩 α，一定是某一步的角算错了。</p></div>
+    <div class="body"><p>· 漏写"<span class="mtx">B</span>、<span class="mtx">C</span>、<span class="mtx">F</span> 共线"：<span class="mtx">∠ ACF=90°-<span class="frac"><span>α</span><span>2</span></span></span> 就没有出处，第③步接不上。</p>
+<p>· 把旋转角当成 <span class="mtx">90°</span>：题目转的是 <span class="mtx">90°-α</span>，所以 <span class="mtx">∠ ACD=90°-α</span>，不是 <span class="mtx">90°</span>。</p>
+<p>· 最后没把 <span class="mtx">α</span> 消干净：只要答案里还剩 <span class="mtx">α</span>，一定是某一步的角算错了。</p></div>
   </details>
   <details class="card">
     <summary>自检（老师用，学生不用看）</summary>
@@ -1171,19 +1181,18 @@ _ar.addEventListener("input", ev=>{
 });
 document.getElementById("alphaOut").textContent = NODES.get("alp").par.deg.toFixed(1) + "°";
 
-/* 状态条：用 MutationObserver 跟 #svg 的每次重绘，不依赖 render 引用 */
 function syncFig1(){
   const el = document.getElementById("status");
   if (!el || !NODES.get("F")._v) return;
   const v = angAt(Pt("F"), Pt("A"), Pt("C"));
-  el.textContent = "∠AFC = " + v.toFixed(1) + "°　（α 怎么拖都不变）";
+  el.textContent = "∠AFC = " + v.toFixed(1) + "°　（α 怎么变都不变）";
   el.classList.add("ok");
 }
 new MutationObserver(syncFig1).observe(document.getElementById("svg"), {childList: true});
 syncFig1();
 
 render();
-svg.setAttribute('viewBox', '24 27 325 268');
+svg.setAttribute('viewBox', '30 22 352 274');
 </script>
 </body>
 </html>

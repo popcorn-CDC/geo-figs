@@ -66,13 +66,23 @@
   details.card>summary:before{content:"▸";display:inline-block;width:14px;color:var(--muted,#9aa0a6)}
   details.card[open]>summary:before{content:"▾"}
   details.card>summary b{color:var(--blue,#2f6fed);margin-right:4px}
-  details.card .body{padding:0 14px 13px;font-size:13.5px;line-height:1.85}
-  .body p{margin:7px 0}
-  .body .step{margin:8px 0;padding-left:2px}
+  details.card .body{padding:0 14px 13px;font-size:13.5px;line-height:2.05}
+  .body p{margin:8px 0}
+  .body .step{margin:9px 0;padding-left:2px}
   .body .why{background:rgba(47,111,237,.06);border-left:3px solid var(--blue,#2f6fed);
     padding:8px 11px;border-radius:0 8px 8px 0;margin:10px 0}
   .body em{font-style:normal;color:#e8833a;font-weight:650}
   .body .mq{font-family:"Times New Roman",Times,serif;font-style:italic}
+  /* 手写体式的公式 */
+  .mtx{font-family:"Times New Roman",Times,serif;font-style:italic;white-space:nowrap;
+    font-size:1.06em;letter-spacing:.2px}
+  .mtx sup{font-size:.66em;vertical-align:.5em;font-style:normal}
+  .frac{display:inline-block;vertical-align:-.42em;text-align:center;font-size:.94em;
+    line-height:1.1;margin:0 .18em}
+  .frac>span{display:block;padding:0 .2em}
+  .frac>span:first-child{border-bottom:1px solid currentColor;padding-bottom:.05em}
+  .sqrt .rad{border-top:1px solid currentColor;padding:0 .13em 0 .05em}
+  .up{font-style:normal}
   .hidden{display:none}
 </style>
 </head>
@@ -81,7 +91,7 @@
 <div class="wrap">
   <div class="head">
     <div class="ttl">27 题（2）· GH 与 BF 有什么关系时 DF = √2·EH</div>
-    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121a</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121b</div>
   </div>
 
   <div class="stage">
@@ -90,45 +100,45 @@
   </div>
 
   <div class="ctl">
-    <div class="sl"><input id="hRange" type="range" min="0.05" max="0.95" step="0.002" value="0.42"></div><div class="hint">拖动滑杆（或直接拖图上的 <b>H</b>），让它追上空心圈</div>
+    <div class="hint">拖动图上的 <b>C</b> 点（绕 A 转）改变 α —— 整幅图跟着变，而 <b>H 始终是 BC 中点</b></div>
   </div>
 
   <details class="card" open>
     <summary><b>①</b> 关键辅助线：为什么这样作（反推）</summary>
     <div class="body"><p>从结论往回走，三步就到：</p>
-<div class="why"><b>① 见 45° 想到 √2</b>　含 45° 的直角三角形里，斜边 = √2 × 直角边。<br>
-所以<em>作 DN ⊥ CF</em>，Rt△DNF 中 ∠DFN=45°，得 NF = DN = DF/√2，于是<br>
-　　<b>DF = √2EH ⟺ NF = EH</b>。</div>
-<div class="why"><b>② 见 EH 想到斜边中线</b>　先由 ∠ACE=90°−α、∠CAE=α 得 ∠AEC=90°，即 <em>AB⊥CD</em>，所以 ∠CEB=90°。<br>
-若 H 是 BC 中点，则 Rt△CEB 的斜边中线 <em>EH = ½BC</em>，条件又变成 <b>NF = ½BC</b>。</div>
-<div class="why"><b>③ 把 NF 和 ½BC 接上</b>　这正是 <em>△DNC ≌ △BMA</em>：∠DCN=α/2=∠BAM、两个直角、CD=AB，AAS 齐了 ⟹ DN = BM = ½BC；而 △DNF 等腰直角，故 NF = DN = ½BC。</div>
-<p>最后"GH 和 BF 什么关系"用中点算最快：设 HG=a、GB=b，两三行就出来（见②⑤）。</p>
-<p class="hint">颜色：<b style="color:#d6457a">玫红</b> = ½BC 那一族（DN、BM）；<b style="color:#0b8a8a">青色</b> = 全等的两条斜边（CD、AB）；橙段 GH 与绿段 BF 是要比的两段。</p></div>
+<div class="why"><b>① 见 <span class="mtx">45°</span> 想到 <span class="mtx"><span class="sqrt">√<span class="rad">2</span></span></span></b>　含 <span class="mtx">45°</span> 的直角三角形里，斜边 <span class="mtx">=<span class="sqrt">√<span class="rad">2</span></span>×</span> 直角边。<br>
+所以<em>作 <span class="mtx">DN⊥ CF</span></em>，<span class="mtx"><span class="up">Rt</span>△ DNF</span> 中 <span class="mtx">∠ DFN=45°</span>，得
+<span class="mtx">NF=DN=<span class="frac"><span>DF</span><span><span class="sqrt">√<span class="rad">2</span></span></span></span></span>，于是 <span class="mtx">DF=<span class="sqrt">√<span class="rad">2</span></span>,EH ⟺ NF=EH</span>。</div>
+<div class="why"><b>② 见 <span class="mtx">EH</span> 想到斜边中线</b>　先由 <span class="mtx">∠ ACE=90°-α</span>、<span class="mtx">∠ CAE=α</span> 得 <span class="mtx">∠ AEC=90°</span>，即 <em><span class="mtx">AB⊥ CD</span></em>，所以 <span class="mtx">∠ CEB=90°</span>。<br>
+<span class="mtx">H</span> 是 <span class="mtx">BC</span> 中点，则 <span class="mtx"><span class="up">Rt</span>△ CEB</span> 的斜边中线 <span class="mtx">EH=<span class="frac"><span>1</span><span>2</span></span>BC</span>，条件又变成 <span class="mtx">NF=<span class="frac"><span>1</span><span>2</span></span>BC</span>。</div>
+<div class="why"><b>③ 把 <span class="mtx">NF</span> 和 <span class="mtx"><span class="frac"><span>1</span><span>2</span></span>BC</span> 接上</b>　这正是 <em><span class="mtx">△ DNC≌△ BHA</span></em>：<span class="mtx">∠ DCN=<span class="frac"><span>α</span><span>2</span></span>=∠ BAH</span>、两个直角、<span class="mtx">CD=AB</span>，AAS 齐了 ⟹ <span class="mtx">DN=BH=<span class="frac"><span>1</span><span>2</span></span>BC</span>；而 <span class="mtx">△ DNF</span> 等腰直角，故 <span class="mtx">NF=DN=<span class="frac"><span>1</span><span>2</span></span>BC</span>。</div>
+<p>最后"<span class="mtx">GH</span> 和 <span class="mtx">BF</span> 什么关系"用中点算最快：设 <span class="mtx">HG=a</span>、<span class="mtx">GB=b</span>，两三行就出来（见 ②⑤）。</p>
+<p class="hint">颜色：<b style="color:#d6457a">玫红</b> = 半个 <span class="mtx">BC</span> 那一族（<span class="mtx">DN</span>、<span class="mtx">BH</span>）；<b style="color:#0b8a8a">青色</b> = 全等的两条斜边（<span class="mtx">CD</span>、<span class="mtx">AB</span>）；橙段 <span class="mtx">GH</span> 与绿段 <span class="mtx">BF</span> 是要比的两段。</p></div>
   </details>
   <details class="card">
     <summary><b>②</b> 规范解答</summary>
-    <div class="body"><div class="step">① 由 (1) ∠AFC=45°；∠ACE=∠ACD=90°−α，∠CAE=α，<br>
-∴ ∠AEC=90°，即 AB⊥CD，故 ∠CEB=90°．</div>
-<div class="step">② 过 D 作 DN⊥CF 于 N．在 Rt△DNF 中 ∠DFN=45°，<br>
-∴ <span class="mq">NF=DN=DF/√2</span>，即 <span class="mq">DF=√2EH ⟺ NF=EH</span>．</div>
-<div class="step">③ 若 H 为 BC 中点：Rt△CEB 中斜边中线 <span class="mq">EH=½BC</span>，条件化为 <span class="mq">NF=½BC</span>．</div>
-<div class="step">④ 证 NF=½BC：∠DCN=∠ACF−∠ACD=α/2=∠BAM，∠DNC=∠BMA=90°，CD=AB，<br>
-∴ △DNC≌△BMA(AAS)，∴ <span class="mq">DN=BM=½BC</span>；又 △DNF 等腰直角，∴ <span class="mq">NF=DN=½BC</span>．<br>
-∴ H 为 BC 中点时 DF=√2·NF=√2·½BC=<span class="mq">√2EH</span>．</div>
-<div class="step">⑤ 说明"只有这个位置"：设 HG=a，GB=b．<br>
-<i>正着算</i>：若 H 为 CB 中点，则 CH=HB=a+b ⟹ CB=2a+2b；<br>
-G 为 CF 中点 ⟹ CG=CH+HG=2a+b ⟹ CF=2CG=4a+2b；<br>
-∴ <span class="mq">BF=CF−CB=2a=2HG</span>．<br>
-<i>反着算</i>：若 BF=2HG=2a，由 CF=2CG=2(CH+a) 与 CF=CB+BF=(CH+a+b)+2a 相等，<br>
-得 <span class="mq">CH=a+b=HB</span>，即 H 为 CB 中点．</div>
-<div class="why">结论：当 <em>GH = ½BF</em>（即 H 为 BC 中点）时，DF = √2·EH．</div></div>
+    <div class="body"><div class="step">① 由 (1) <span class="mtx">∠ AFC=45°</span>；<span class="mtx">∠ ACE=∠ ACD=90°-α</span>，<span class="mtx">∠ CAE=α</span>，<br>
+∴ <span class="mtx">∠ AEC=90°</span>，即 <span class="mtx">AB⊥ CD</span>，故 <span class="mtx">∠ CEB=90°</span>．</div>
+<div class="step">② 过 <span class="mtx">D</span> 作 <span class="mtx">DN⊥ CF</span> 于 <span class="mtx">N</span>．在 <span class="mtx"><span class="up">Rt</span>△ DNF</span> 中 <span class="mtx">∠ DFN=45°</span>，<br>
+∴ <span class="mtx">NF=DN=<span class="frac"><span>DF</span><span><span class="sqrt">√<span class="rad">2</span></span></span></span></span>，即 <span class="mtx">DF=<span class="sqrt">√<span class="rad">2</span></span>,EH ⟺ NF=EH</span>．</div>
+<div class="step">③ <span class="mtx">H</span> 为 <span class="mtx">BC</span> 中点时，<span class="mtx"><span class="up">Rt</span>△ CEB</span> 中斜边中线 <span class="mtx">EH=<span class="frac"><span>1</span><span>2</span></span>BC</span>，条件化为 <span class="mtx">NF=<span class="frac"><span>1</span><span>2</span></span>BC</span>．</div>
+<div class="step">④ 证 <span class="mtx">NF=<span class="frac"><span>1</span><span>2</span></span>BC</span>：<span class="mtx">∠ DCN=∠ ACF-∠ ACD=<span class="frac"><span>α</span><span>2</span></span>=∠ BAH</span>，<span class="mtx">∠ DNC=∠ BHA=90°</span>，<span class="mtx">CD=AB</span>，<br>
+∴ <span class="mtx">△ DNC≌△ BHA</span>（AAS），∴ <span class="mtx">DN=BH=<span class="frac"><span>1</span><span>2</span></span>BC</span>；又 <span class="mtx">△ DNF</span> 等腰直角，∴ <span class="mtx">NF=DN=<span class="frac"><span>1</span><span>2</span></span>BC</span>．<br>
+∴ <span class="mtx">DF=<span class="sqrt">√<span class="rad">2</span></span>,NF=<span class="sqrt">√<span class="rad">2</span></span>·<span class="frac"><span>1</span><span>2</span></span>BC=<span class="sqrt">√<span class="rad">2</span></span>,EH</span>．</div>
+<div class="step">⑤ 说明"只有这个位置"：设 <span class="mtx">HG=a</span>，<span class="mtx">GB=b</span>．<br>
+<i>正着算</i>：若 <span class="mtx">H</span> 为 <span class="mtx">CB</span> 中点，则 <span class="mtx">CH=HB=a+b</span> ⟹ <span class="mtx">CB=2a+2b</span>；<br>
+<span class="mtx">G</span> 为 <span class="mtx">CF</span> 中点 ⟹ <span class="mtx">CG=CH+HG=2a+b</span> ⟹ <span class="mtx">CF=2CG=4a+2b</span>；<br>
+∴ <span class="mtx">BF=CF-CB=2a=2HG</span>．<br>
+<i>反着算</i>：若 <span class="mtx">BF=2HG=2a</span>，由 <span class="mtx">CF=2CG=2(CH+a)</span> 与 <span class="mtx">CF=CB+BF=(CH+a+b)+2a</span> 相等，<br>
+得 <span class="mtx">CH=a+b=HB</span>，即 <span class="mtx">H</span> 为 <span class="mtx">CB</span> 中点．</div>
+<div class="why">结论：当 <em><span class="mtx">GH=<span class="frac"><span>1</span><span>2</span></span>BF</span></em>（即 <span class="mtx">H</span> 为 <span class="mtx">BC</span> 中点）时，<span class="mtx">DF=<span class="sqrt">√<span class="rad">2</span></span>,EH</span>．</div></div>
   </details>
   <details class="card">
     <summary><b>③</b> 易错点</summary>
-    <div class="body"><p>· 反推要"写回去"：只证"H 在中点时成立"不够，⑤ 还要说明别的点不成立。</p>
-<p>· 全等的对应边：DN 对 BM，不是对 AM。</p>
-<p>· 45° 用的是 ∠DFN（F 处），不是 ∠DFC 的补角 135°。</p>
-<p>· 用 a、b 时注意顺序是 C—H—G—B—F，所以 HB=HG+GB=a+b，CB=CH+HB。</p></div>
+    <div class="body"><p>· 反推要"写回去"：只证"<span class="mtx">H</span> 在中点时成立"不够，⑤ 还要说明别的点不成立。</p>
+<p>· 全等的对应边：<span class="mtx">DN</span> 对 <span class="mtx">BH</span>，不是对 <span class="mtx">AH</span>。</p>
+<p>· <span class="mtx">45°</span> 用的是 <span class="mtx">∠ DFN</span>（<span class="mtx">F</span> 处），不是 <span class="mtx">∠ DFC</span> 的补角 <span class="mtx">135°</span>。</p>
+<p>· 用 <span class="mtx">a</span>、<span class="mtx">b</span> 时注意顺序是 <span class="mtx">C-H-G-B-F</span>，所以 <span class="mtx">HB=HG+GB=a+b</span>，<span class="mtx">CB=CH+HB</span>。</p></div>
   </details>
   <details class="card">
     <summary>自检（老师用，学生不用看）</summary>
@@ -405,40 +415,38 @@ function bisectorPointNode(id, v, a, b, len, o){
   }, Object.assign({parents: [v, a, b], doc: id + " := AngleBisector(" + a + ", " + v + ", " + b + ")"}, o));
 }
 
+
 /* ============================================================
-   27 题：AB = AC，∠BAC = α；CA 绕 C 逆时针转 90°−α 得 CD；
-   E = AB ∩ CD；F = 射线 AD ∩ CB 延长线
-   取 AC = 2，AF 恒水平（朝向照原卷：A 左下、C 上、F 右下）
+   学生版 27(2)：H 固定在 BC 中点，拖 C 改变 α（整幅图随动）
    ============================================================ */
 const AC = 2;
-const alDeg = () => NODES.get("alp").par.deg;
 const RAD = d => d * SQ;
+const alphaNow = () => angAt(Pt("A"), Pt("B"), Pt("C"));   // 实测 ∠BAC
 
-def("alp", {type: "none", par: {deg: 56},
-  doc: "α：0° < α < 90°（滑杆驱动；本图每个点都由 α 算出）",
-  build(){ return {k: "none"}; }});
+derivedPoint("A", () => ({k: "pt", x: 0, y: 0}), {doc: "A := Point(0,0)（固定）"});
 
-freePoint("A", 0, 0, {label: "A", dir: [-19, -3], size: 2,
-  doc: "A := Point(0,0)   -- 可拖，整幅图跟随平移"});
+/* C 可拖：只取方向，长度锁在 AC 上；拖它等于改 α */
+def("C", {type: "point", drag: "free", par: {x: 0.585, y: 1.913},
+  label: "C", dir: [12, -15], size: 1,
+  doc: "C := 方向可拖，|AC| 固定（拖 C 改变 α）",
+  build(){ const A = Pt("A"); const dx = this.par.x - A.x, dy = this.par.y - A.y;
+    const L = Math.hypot(dx, dy) || 1;
+    return {k: "pt", x: A.x + AC * dx / L, y: A.y + AC * dy / L}; }});
 
-derivedPoint("C", () => { const A = Pt("A"), f = RAD(45 + alDeg() / 2);
+derivedPoint("B", () => { const A = Pt("A"), C = Pt("C");
+  const phi = Math.atan2(C.y - A.y, C.x - A.x), a = 2 * (phi - Math.PI / 4);
+  const f = phi - a;                                  // = 45° − α/2
   return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
-  {label: "C", dir: [12, -15], size: 1, parents: ["A", "alp"],
-   doc: "C := A + AC·(cos(45°+α/2), sin(45°+α/2))"});
+  {label: "B", dir: [14, -12], size: 1, parents: ["A", "C"],
+   doc: "B := A + AB·(cos(45°−α/2), sin(45°−α/2))，AB = AC"});
 
-derivedPoint("B", () => { const A = Pt("A"), f = RAD(45 - alDeg() / 2);
-  return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
-  {label: "B", dir: [14, -12], size: 1, parents: ["A", "alp"],
-   doc: "B := A + AB·(cos(45°−α/2), sin(45°−α/2))，AB = AC、∠BAC = α"});
-
-rotPoint("D", "A", () => 90 - alDeg(), "C",
-  {label: "D", dir: [-7, 18], size: 1,
-   doc: "D := Rotate(A, 90°−α, C)   -- CD = CA、∠ACD = 90°−α"});
+rotPoint("D", "A", () => 90 - alphaNow(), "C",
+  {label: "D", dir: [-20, 20], size: 1, doc: "D := Rotate(A, 90°−α, C)"});
 
 lineNode("lAD", "A", "D", {w: 0});
 lineNode("lCB", "C", "B", {w: 0});
-intersectNode("F", "lAD", "lCB", 1, {label: "F", dir: [14, 8], size: 1,
-  doc: "F := Line(A,D) ∩ Line(C,B)   -- 射线 AD 与 CB 延长线交点"});
+intersectNode("F", "lAD", "lCB", 1, {label: "F", dir: [12, 0], size: 1,
+  doc: "F := Line(A,D) ∩ Line(C,B)"});
 
 segNode("sAB", "A", "B", {step: 1, w: 1.5});
 segNode("sAC", "A", "C", {step: 1, w: 1.5});
@@ -455,58 +463,50 @@ angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "var(--blue,#2f6fed)
 angleNode("aC", "C", "A", "D", 0.74, "90°−α", {step: 3, color: "var(--orange,#e8833a)"});
 angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 3, color: "var(--green,#2f9e63)"});
 
-/* ---- G：CF 中点；H：CG 上动点 ---- */
-midPoint("G", "C", "F", {label: "G", dir: [12, -12], size: 1, step: 3,
-  doc: "G := MidPoint(C, F)"});
-onSeg("H", "C", "G", 0.35, {label: "H", dir: [18, -18], size: 1, step: 3,
-  doc: "H := PointOnSegment(C, G, s)   -- 可拖，也可用滑杆"});
-segNode("sEH", "E", "H", {step: 3, w: 2.0, color: "#8b5cf6"});
+/* G：CF 中点；H：BC 中点（固定，不拖） */
+midPoint("G", "C", "F", {label: "G", dir: [12, -12], size: 1, step: 3, doc: "G := MidPoint(C, F)"});
+midPoint("H", "B", "C", {label: "H", dir: [16, -16], size: 1, step: 3,
+  doc: "H := MidPoint(B, C)   -- 结论位置，固定不动"});
+segNode("sEH", "E", "H", {step: 3, w: 2.4, color: "#8b5cf6"});
+segNode("sAH", "A", "H", {step: 3, w: 1.0, dash: "5 4", color: "var(--muted,#6b7280)"});
+rightNode("rH", "H", "B", "A", 0.11, {step: 3, color: "var(--muted,#6b7280)"});
+segNode("sBH", "B", "H", {step: 4, w: 2.6, color: "#d6457a"});
 segNode("sGH", "G", "H", {step: 5, w: 3.4, color: "var(--orange,#e8833a)"});
 segNode("sBF", "B", "F", {step: 5, w: 3.4, color: "var(--green,#2f9e63)"});
 
-/* ---- M：BC 中点（空心圈＝H 该在的位置） ---- */
-midPoint("M", "B", "C", {label: "M", dir: [16, -16], size: 1, step: 3, doc: "M := MidPoint(B, C)   -- H 的目标位置（空心圈）"});
-circleR("ringM", "M", 0.062, {step: 3, w: 1.3, color: "var(--muted,#6b7280)"});
-segNode("sAM", "A", "M", {step: 3, w: 1.0, dash: "5 4", color: "var(--muted,#6b7280)"});
-rightNode("rM", "M", "B", "A", 0.11, {step: 3, color: "var(--muted,#6b7280)"});
-segNode("sBM", "B", "M", {step: 3, w: 0});
-
-/* ---- 第 2 步：AB ⊥ CD 于 E ---- */
+/* 第 2 步：AB ⊥ CD */
 rightNode("rE", "E", "A", "C", 0.105, {step: 2});
 
-/* ---- 第 4 步：作 DN ⊥ CF 于 N，△DNC ≌ △BMA ---- */
+/* 第 4 步：作 DN ⊥ CF，△DNC ≌ △BHA */
 perpLineNode("plDN", "C", "F", "D", {step: 4, w: 0});
 intersectNode("N", "sCF", "plDN", 1, {label: "N", dir: [10, -12], size: 1, step: 4,
-  doc: "N := CF ∩ PerpLine(CF, D)   -- 作 DN⊥CF，N 为垂足"});
+  doc: "N := CF ∩ PerpLine(CF, D)"});
 segNode("sDN", "D", "N", {step: 4, w: 2.6, color: "#d6457a"});
 rightNode("rN", "N", "C", "D", 0.10, {step: 4});
 polyNode("triDNC", ["D", "N", "C"], {step: 4, fill: "rgba(214,69,122,0.13)"});
-polyNode("triBMA", ["B", "M", "A"], {step: 4, fill: "rgba(47,158,99,0.14)"});
-angleNode("aA2", "A", "B", "M", 0.58, "α/2", {step: 4, color: "#8b5cf6"});
+polyNode("triBHA", ["B", "H", "A"], {step: 4, fill: "rgba(47,158,99,0.14)"});
+angleNode("aA2", "A", "B", "H", 0.58, "α/2", {step: 4, color: "#8b5cf6"});
 angleNode("aC2", "C", "D", "N", 0.30, "", {step: 4, color: "#8b5cf6"});
-segNode("cBM", "B", "M", {step: 4, w: 2.6, color: "#d6457a"});
 segNode("cCD", "C", "D", {step: 4, w: 2.6, color: "#0b8a8a"});
 segNode("cAB", "A", "B", {step: 4, w: 2.6, color: "#0b8a8a"});
 
-/* ---------- 自检项（前 7 项是恒等式，最后 2 项随 H 变化） ---------- */
+/* ---------- 自检项 ---------- */
 const CHECKS = [
-  {name: "∠AFC = 45°",      f: () => Math.abs(angAt(Pt("F"), Pt("A"), Pt("C")) - 45), unit: "°", tol: 1e-9},
-  {name: "∠AEC = 90°",      f: () => Math.abs(angAt(Pt("E"), Pt("A"), Pt("C")) - 90), unit: "°", tol: 1e-9},
-  {name: "CD = CA = AB",    f: () => Math.max(Math.abs(dist(Pt("C"), Pt("D")) - AC), Math.abs(dist(Pt("A"), Pt("B")) - AC)), unit: "u", tol: 1e-9},
-  {name: "DN = BM（½BC）",   f: () => Math.abs(dist(Pt("D"), Pt("N")) - dist(Pt("B"), Pt("M"))), unit: "u", tol: 1e-9},
-  {name: "CN = AM",         f: () => Math.abs(dist(Pt("C"), Pt("N")) - dist(Pt("A"), Pt("M"))), unit: "u", tol: 1e-9},
-  {name: "DF = √2·DN",      f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("D"), Pt("N"))), unit: "u", tol: 1e-9},
-  {name: "DF = √2·EM",      f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("E"), Pt("M"))), unit: "u", tol: 1e-9},
-  {name: "GH = ½BF（H 在 M）", f: () => Math.abs(dist(Pt("G"), Pt("H")) - dist(Pt("B"), Pt("F")) / 2), unit: "u", tol: 1e-9},
-  {name: "DF = √2·EH（H 在 M）", f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("E"), Pt("H"))), unit: "u", tol: 1e-9}
+  {name: "∠AFC = 45°",   f: () => Math.abs(angAt(Pt("F"), Pt("A"), Pt("C")) - 45), unit: "°", tol: 1e-7},
+  {name: "∠AEC = 90°",   f: () => Math.abs(angAt(Pt("E"), Pt("A"), Pt("C")) - 90), unit: "°", tol: 1e-7},
+  {name: "CD = CA = AB", f: () => Math.max(Math.abs(dist(Pt("C"), Pt("D")) - AC), Math.abs(dist(Pt("A"), Pt("B")) - AC)), unit: "u", tol: 1e-9},
+  {name: "DN = BH（½BC）", f: () => Math.abs(dist(Pt("D"), Pt("N")) - dist(Pt("B"), Pt("H"))), unit: "u", tol: 1e-9},
+  {name: "CN = AH",      f: () => Math.abs(dist(Pt("C"), Pt("N")) - dist(Pt("A"), Pt("H"))), unit: "u", tol: 1e-9},
+  {name: "DF = √2·DN",   f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("D"), Pt("N"))), unit: "u", tol: 1e-9},
+  {name: "DF = √2·EH",   f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("E"), Pt("H"))), unit: "u", tol: 1e-9},
+  {name: "GH = ½BF",     f: () => Math.abs(dist(Pt("G"), Pt("H")) - dist(Pt("B"), Pt("F")) / 2), unit: "u", tol: 1e-9}
 ];
 const EXTRA = [
-  {label: "DF",        f: () => dist(Pt("D"), Pt("F")), dec: 4},
-  {label: "√2·EH",     f: () => Math.SQRT2 * dist(Pt("E"), Pt("H")), dec: 4},
-  {label: "GH",        f: () => dist(Pt("G"), Pt("H")), dec: 4},
-  {label: "½BF",       f: () => dist(Pt("B"), Pt("F")) / 2, dec: 4},
-  {label: "CH",        f: () => dist(Pt("C"), Pt("H")), dec: 4},
-  {label: "½CB",       f: () => dist(Pt("C"), Pt("B")) / 2, dec: 4}
+  {label: "α",      f: () => alphaNow(), dec: 1, unit: "°"},
+  {label: "DF",     f: () => dist(Pt("D"), Pt("F")), dec: 4},
+  {label: "√2·EH",  f: () => Math.SQRT2 * dist(Pt("E"), Pt("H")), dec: 4},
+  {label: "GH",     f: () => dist(Pt("G"), Pt("H")), dec: 4},
+  {label: "½BF",    f: () => dist(Pt("B"), Pt("F")) / 2, dec: 4}
 ];
 
 /* ---------- 绘图 ---------- */
@@ -1203,37 +1203,22 @@ function importProjectFile(ev){
 svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 markStep();
 render();
-function snapH(){
-  const n = NODES.get("H");
-  const sEx = dist(Pt("C"), Pt("B")) / dist(Pt("C"), Pt("F"));
-  if (Math.abs(n.par.s - sEx) < 0.012) n.par.s = sEx;
-}
-NODES.get("H").par.s = 0.42;
-const _hr = document.getElementById("hRange");
-_hr.value = NODES.get("H").par.s;
-_hr.addEventListener("input", ev=>{ NODES.get("H").par.s = +ev.target.value; snapH(); render(); });
-window.addEventListener("pointerup", ()=>{ snapH(); render(); });
 
-/* 状态条 + 滑杆回显：同样用 MutationObserver，任何来源的重绘都能同步 */
+
 function syncFig2(){
   const el = document.getElementById("status");
   if (!el || !NODES.get("H")._v) return;
-  const hr = document.getElementById("hRange");
-  if (hr) hr.value = NODES.get("H").par.s;
-  const gh = dist(Pt("G"), Pt("H")), hb = dist(Pt("B"), Pt("F")) / 2;
-  if (Math.abs(gh - hb) < 0.003){
-    el.textContent = "✓ GH = ½BF　此时 DF = √2·EH";
-    el.classList.add("ok");
-  } else {
-    el.textContent = "把 H 拖到空心圈（BC 中点）试试";
-    el.classList.remove("ok");
-  }
+  const okDF = Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("E"), Pt("H"))) < 1e-6;
+  const okGH = Math.abs(dist(Pt("G"), Pt("H")) - dist(Pt("B"), Pt("F")) / 2) < 1e-6;
+  el.textContent = (okDF && okGH ? "✓ H 在 BC 中点：GH = ½BF，DF = √2·EH" : "关系不成立")
+                  + "　α = " + alphaNow().toFixed(1) + "°";
+  el.classList.toggle("ok", okDF && okGH);
 }
 new MutationObserver(syncFig2).observe(document.getElementById("svg"), {childList: true});
 syncFig2();
 
 render();
-svg.setAttribute('viewBox', '24 27 325 268');
+svg.setAttribute('viewBox', '30 22 352 274');
 </script>
 </body>
 </html>
