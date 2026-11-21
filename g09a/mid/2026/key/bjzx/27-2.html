@@ -94,35 +94,41 @@
   </div>
 
   <details class="card" open>
-    <summary><b>①</b> 关键辅助线：为什么这样作</summary>
-    <div class="body"><p>看到三样东西，就该想到三条固定的路子：</p>
+    <summary><b>①</b> 关键辅助线：为什么这样作（反推）</summary>
+    <div class="body"><p>从结论往回走，三步就到：</p>
 <div class="why"><b>① 见 45° 想到 √2</b>　含 45° 的直角三角形里，斜边 = √2 × 直角边。<br>
-所以要把 DF 放进一个 45° 的直角三角形：<em>过 D 作 DK ⊥ CF</em>，则 Rt△DKF 中 ∠DFK=45°，得 DF=√2·DK。</div>
-<div class="why"><b>② 见中点想到斜边中线</b>　先证 E 是 C 到 AB 的垂足（∠AEC=90°），再取 BC 中点 M，直角三角形斜边中线 <em>EM=½BC</em>。</div>
-<div class="why"><b>③ 两条要接上，缺一座桥</b>　需要 DK=½BC，而这正是 <em>△DKC ≌ △BMA</em>：直角、α/2、CD=AB，AAS 刚好齐。</div>
-<p>G 是 CF 中点，作用只是"翻译"：GH=½BF ⟺ CH=½CB ⟺ H 是 BC 中点（中位线反过来用）。</p>
-<p class="hint">图上：空心圈 = BC 中点 M；紫线 EH、DK 是临时辅助线；橙段 GH 与绿段 BF 就是要比的两段。</p></div>
+所以<em>作 DN ⊥ CF</em>，Rt△DNF 中 ∠DFN=45°，得 NF = DN = DF/√2，于是<br>
+　　<b>DF = √2EH ⟺ NF = EH</b>。</div>
+<div class="why"><b>② 见 EH 想到斜边中线</b>　先由 ∠ACE=90°−α、∠CAE=α 得 ∠AEC=90°，即 <em>AB⊥CD</em>，所以 ∠CEB=90°。<br>
+若 H 是 BC 中点，则 Rt△CEB 的斜边中线 <em>EH = ½BC</em>，条件又变成 <b>NF = ½BC</b>。</div>
+<div class="why"><b>③ 把 NF 和 ½BC 接上</b>　这正是 <em>△DNC ≌ △BMA</em>：∠DCN=α/2=∠BAM、两个直角、CD=AB，AAS 齐了 ⟹ DN = BM = ½BC；而 △DNF 等腰直角，故 NF = DN = ½BC。</div>
+<p>最后"GH 和 BF 什么关系"用中点算最快：设 HG=a、GB=b，两三行就出来（见②⑤）。</p>
+<p class="hint">颜色：<b style="color:#d6457a">玫红</b> = ½BC 那一族（DN、BM）；<b style="color:#0b8a8a">青色</b> = 全等的两条斜边（CD、AB）；橙段 GH 与绿段 BF 是要比的两段。</p></div>
   </details>
   <details class="card">
     <summary><b>②</b> 规范解答</summary>
-    <div class="body"><div class="step">① 证 AB⊥CD：∠ACE=∠ACD=90°−α，∠CAE=α，∴ ∠AEC=90°，即 AB⊥CD，E 为 C 到 AB 的垂足。</div>
-<div class="step">② 取 BC 中点 M．在 Rt△BEC 中，EM 是斜边中线，∴ <span class="mq">EM=½BC</span>；<br>
-又 AB=AC，∴ AM⊥BC，∠BAM=α/2．</div>
-<div class="step">③ 作 DK⊥CF 于 K（∠DCF=α/2、∠DFC=45° 都是锐角，垂足 K 落在线段 CF 上）．<br>
-∵ ∠DCK=∠ACF−∠ACD=α/2=∠BAM，∠DKC=∠BMA=90°，CD=AB，<br>
-∴ △DKC≌△BMA(AAS)，∴ <span class="mq">DK=BM=½BC</span>．<br>
-在 Rt△DKF 中 ∠DFK=45°，∴ <span class="mq">DF=√2·DK=√2·½BC=√2·EM</span>．</div>
-<div class="step">④ 反过来：若 DF=√2·EH，则 EH=½BC=EM；又 G 为 CF 中点，<br>
-CH=½CB ⟺ GH=CG−CH=½CF−½CB=½BF．<br>
-∴ H 与 M 重合，即 <span class="mq">GH=½BF</span>．</div>
+    <div class="body"><div class="step">① 由 (1) ∠AFC=45°；∠ACE=∠ACD=90°−α，∠CAE=α，<br>
+∴ ∠AEC=90°，即 AB⊥CD，故 ∠CEB=90°．</div>
+<div class="step">② 过 D 作 DN⊥CF 于 N．在 Rt△DNF 中 ∠DFN=45°，<br>
+∴ <span class="mq">NF=DN=DF/√2</span>，即 <span class="mq">DF=√2EH ⟺ NF=EH</span>．</div>
+<div class="step">③ 若 H 为 BC 中点：Rt△CEB 中斜边中线 <span class="mq">EH=½BC</span>，条件化为 <span class="mq">NF=½BC</span>．</div>
+<div class="step">④ 证 NF=½BC：∠DCN=∠ACF−∠ACD=α/2=∠BAM，∠DNC=∠BMA=90°，CD=AB，<br>
+∴ △DNC≌△BMA(AAS)，∴ <span class="mq">DN=BM=½BC</span>；又 △DNF 等腰直角，∴ <span class="mq">NF=DN=½BC</span>．<br>
+∴ H 为 BC 中点时 DF=√2·NF=√2·½BC=<span class="mq">√2EH</span>．</div>
+<div class="step">⑤ 说明"只有这个位置"：设 HG=a，GB=b．<br>
+<i>正着算</i>：若 H 为 CB 中点，则 CH=HB=a+b ⟹ CB=2a+2b；<br>
+G 为 CF 中点 ⟹ CG=CH+HG=2a+b ⟹ CF=2CG=4a+2b；<br>
+∴ <span class="mq">BF=CF−CB=2a=2HG</span>．<br>
+<i>反着算</i>：若 BF=2HG=2a，由 CF=2CG=2(CH+a) 与 CF=CB+BF=(CH+a+b)+2a 相等，<br>
+得 <span class="mq">CH=a+b=HB</span>，即 H 为 CB 中点．</div>
 <div class="why">结论：当 <em>GH = ½BF</em>（即 H 为 BC 中点）时，DF = √2·EH．</div></div>
   </details>
   <details class="card">
     <summary><b>③</b> 易错点</summary>
-    <div class="body"><p>· 只证"当 H 在中点时成立"，没交代"只有这个位置"——探究题两问都要答。</p>
-<p>· 全等的对应关系写错：DK 对 BM（都对着 α/2 的邻边），不是对 AM。</p>
-<p>· 求 DF 用的是 ∠DFK=45°，别误用 ∠DFC=135°。</p>
-<p>· 漏说垂足 K 在线段 CF 上（要靠 ∠DCF、∠DFC 都是锐角来说明）。</p></div>
+    <div class="body"><p>· 反推要"写回去"：只证"H 在中点时成立"不够，⑤ 还要说明别的点不成立。</p>
+<p>· 全等的对应边：DN 对 BM，不是对 AM。</p>
+<p>· 45° 用的是 ∠DFN（F 处），不是 ∠DFC 的补角 135°。</p>
+<p>· 用 a、b 时注意顺序是 C—H—G—B—F，所以 HB=HG+GB=a+b，CB=CH+HB。</p></div>
   </details>
   <details class="card">
     <summary>自检（老师用，学生不用看）</summary>
@@ -151,6 +157,8 @@ CH=½CB ⟺ GH=CG−CH=½CF−½CB=½BF．<br>
    ============================================================ */
 const SQ = Math.PI / 180;
 const S = 108, CX = 54, CY = 268, W = 420, H = 308;   // 单位 → 像素
+let FS_PT = 6.2, FS_ANG = 5.0;   // 点标签 / 角标签字号（SVG 用户单位，随 viewBox 缩放）
+const haloW = fs => Math.max(0.8, fs * 0.26).toFixed(2);
 const sx = x => CX + x * S, sy = y => CY - y * S;
 const ux = X => (X - CX) / S, uy = Y => (CY - Y) / S;
 
@@ -296,6 +304,12 @@ function tickNode(id, segId, n, f, o){
   return def(id, Object.assign({type: "tick", parents: [segId], par: {n, f: f == null ? 0.5 : f},
     build(){ return {k: "tick", s: val(segId), n, f: this.par.f}; }}, o));
 }
+function hlNode(id, segId, o){
+  // 荧光笔标记：沿线段铺一条半透明粗带，同色即「等长族」。替代等长刻线（用户习惯）。
+  return def(id, Object.assign({type: "hl", parents: [segId], par: {w: 7},
+    doc: id + " := Highlighter(" + segId + ")   -- 荧光笔，同色 = 等长",
+    build(){ const s = val(segId); return {k: "seg", a: "-", b: "-", p: s.p, q: s.q, seg: true}; }}, o));
+}
 function labelNode(id, x, y, text, o){
   return def(id, Object.assign({type: "text", par: {x, y, text},
     build(){ return {k: "text", x: this.par.x, y: this.par.y, text: this.par.text}; }}, o));
@@ -438,8 +452,6 @@ intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [17, -19], size: 1, step: 
   doc: "E := AB ∩ CD"});
 
 angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "var(--blue,#2f6fed)"});
-tickNode("tAB", "sAB", 1, 0.55, {step: 2, color: "var(--green,#2f9e63)"});
-tickNode("tAC", "sAC", 1, 0.32, {step: 2, color: "var(--green,#2f9e63)"});
 angleNode("aC", "C", "A", "D", 0.74, "90°−α", {step: 3, color: "var(--orange,#e8833a)"});
 angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 3, color: "var(--green,#2f9e63)"});
 
@@ -453,41 +465,37 @@ segNode("sGH", "G", "H", {step: 5, w: 3.4, color: "var(--orange,#e8833a)"});
 segNode("sBF", "B", "F", {step: 5, w: 3.4, color: "var(--green,#2f9e63)"});
 
 /* ---- M：BC 中点（空心圈＝H 该在的位置） ---- */
-midPoint("M", "B", "C", {step: 3, doc: "M := MidPoint(B, C)   -- H 的目标位置（空心圈）"});
+midPoint("M", "B", "C", {label: "M", dir: [16, -16], size: 1, step: 3, doc: "M := MidPoint(B, C)   -- H 的目标位置（空心圈）"});
 circleR("ringM", "M", 0.062, {step: 3, w: 1.3, color: "var(--muted,#6b7280)"});
 segNode("sAM", "A", "M", {step: 3, w: 1.0, dash: "5 4", color: "var(--muted,#6b7280)"});
 rightNode("rM", "M", "B", "A", 0.11, {step: 3, color: "var(--muted,#6b7280)"});
 segNode("sBM", "B", "M", {step: 3, w: 0});
-segNode("sMC", "M", "C", {step: 3, w: 0});
-tickNode("tkBM", "sBM", 2, 0.5, {step: 3, color: "var(--muted,#6b7280)"});
-tickNode("tkMC", "sMC", 2, 0.5, {step: 3, color: "var(--muted,#6b7280)"});
 
 /* ---- 第 2 步：AB ⊥ CD 于 E ---- */
 rightNode("rE", "E", "A", "C", 0.105, {step: 2});
 
-/* ---- 第 4 步：作 DK ⊥ CF 于 K，△DKC ≌ △BMA ---- */
-perpLineNode("plDK", "C", "F", "D", {step: 4, w: 0});
-intersectNode("K", "sCF", "plDK", 1, {label: "K", dir: [10, -12], size: 1, step: 4,
-  doc: "K := CF ∩ PerpLine(CF, D)"});
-segNode("sDK", "D", "K", {step: 4, w: 2.0, color: "#8b5cf6"});
-rightNode("rK", "K", "C", "D", 0.10, {step: 4});
-polyNode("triDKC", ["D", "K", "C"], {step: 4, fill: "rgba(139,92,246,0.16)"});
+/* ---- 第 4 步：作 DN ⊥ CF 于 N，△DNC ≌ △BMA ---- */
+perpLineNode("plDN", "C", "F", "D", {step: 4, w: 0});
+intersectNode("N", "sCF", "plDN", 1, {label: "N", dir: [10, -12], size: 1, step: 4,
+  doc: "N := CF ∩ PerpLine(CF, D)   -- 作 DN⊥CF，N 为垂足"});
+segNode("sDN", "D", "N", {step: 4, w: 2.6, color: "#d6457a"});
+rightNode("rN", "N", "C", "D", 0.10, {step: 4});
+polyNode("triDNC", ["D", "N", "C"], {step: 4, fill: "rgba(214,69,122,0.13)"});
 polyNode("triBMA", ["B", "M", "A"], {step: 4, fill: "rgba(47,158,99,0.14)"});
 angleNode("aA2", "A", "B", "M", 0.58, "α/2", {step: 4, color: "#8b5cf6"});
-arcTickNode("tkA2", "A", "B", "M", 0.58, {step: 4, color: "#8b5cf6"});
-angleNode("aC2", "C", "D", "K", 0.30, "", {step: 4, color: "#8b5cf6"});
-arcTickNode("tkC2", "C", "D", "K", 0.30, {step: 4, color: "#8b5cf6"});
-tickNode("tkDK", "sDK", 1, 0.52, {step: 4, color: "#8b5cf6"});
-tickNode("tkBH", "sBM", 1, 0.30, {step: 4, color: "#8b5cf6"});
+angleNode("aC2", "C", "D", "N", 0.30, "", {step: 4, color: "#8b5cf6"});
+segNode("cBM", "B", "M", {step: 4, w: 2.6, color: "#d6457a"});
+segNode("cCD", "C", "D", {step: 4, w: 2.6, color: "#0b8a8a"});
+segNode("cAB", "A", "B", {step: 4, w: 2.6, color: "#0b8a8a"});
 
 /* ---------- 自检项（前 7 项是恒等式，最后 2 项随 H 变化） ---------- */
 const CHECKS = [
   {name: "∠AFC = 45°",      f: () => Math.abs(angAt(Pt("F"), Pt("A"), Pt("C")) - 45), unit: "°", tol: 1e-9},
   {name: "∠AEC = 90°",      f: () => Math.abs(angAt(Pt("E"), Pt("A"), Pt("C")) - 90), unit: "°", tol: 1e-9},
   {name: "CD = CA = AB",    f: () => Math.max(Math.abs(dist(Pt("C"), Pt("D")) - AC), Math.abs(dist(Pt("A"), Pt("B")) - AC)), unit: "u", tol: 1e-9},
-  {name: "DK = BM（½BC）",   f: () => Math.abs(dist(Pt("D"), Pt("K")) - dist(Pt("B"), Pt("M"))), unit: "u", tol: 1e-9},
-  {name: "CK = AM",         f: () => Math.abs(dist(Pt("C"), Pt("K")) - dist(Pt("A"), Pt("M"))), unit: "u", tol: 1e-9},
-  {name: "DF = √2·DK",      f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("D"), Pt("K"))), unit: "u", tol: 1e-9},
+  {name: "DN = BM（½BC）",   f: () => Math.abs(dist(Pt("D"), Pt("N")) - dist(Pt("B"), Pt("M"))), unit: "u", tol: 1e-9},
+  {name: "CN = AM",         f: () => Math.abs(dist(Pt("C"), Pt("N")) - dist(Pt("A"), Pt("M"))), unit: "u", tol: 1e-9},
+  {name: "DF = √2·DN",      f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("D"), Pt("N"))), unit: "u", tol: 1e-9},
   {name: "DF = √2·EM",      f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("E"), Pt("M"))), unit: "u", tol: 1e-9},
   {name: "GH = ½BF（H 在 M）", f: () => Math.abs(dist(Pt("G"), Pt("H")) - dist(Pt("B"), Pt("F")) / 2), unit: "u", tol: 1e-9},
   {name: "DF = √2·EH（H 在 M）", f: () => Math.abs(dist(Pt("D"), Pt("F")) - Math.SQRT2 * dist(Pt("E"), Pt("H"))), unit: "u", tol: 1e-9}
@@ -542,7 +550,7 @@ function textHalf(text){
   if (_mhCache[key]) return _mhCache[key];
   let hw = 0.05 * key.length, hh = 0.065;
   const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  t.setAttribute("style", "font:italic 12.5px 'Times New Roman',Times,serif");
+  t.setAttribute("style", `font:italic ${FS_ANG}px 'Times New Roman',Times,serif`);
   t.textContent = key;
   try {
     svg.appendChild(t);
@@ -639,6 +647,13 @@ function drawNode(n){
   const w = n.w == null ? 1.2 : n.w;
   const dash = n.dash ? ` stroke-dasharray="${n.dash}"` : "";
   switch (n.type){
+    case "hl": {
+      const {p, q} = n._v;
+      const w = (n.par && n.par.w) || 7;
+      if (!isFinite(p.x) || !isFinite(q.x)) return "";
+      return `<line x1="${sx(p.x)}" y1="${sy(p.y)}" x2="${sx(q.x)}" y2="${sy(q.y)}"
+        style="stroke:${col};stroke-width:${w};stroke-linecap:round;opacity:.40"/>`;
+    }
     case "poly": {
       if (n._v.pts.some(p => !isFinite(p.x) || !isFinite(p.y))) return "";
       const pts = n._v.pts.map(p => `${sx(p.x)},${sy(p.y)}`).join(" ");
@@ -666,7 +681,7 @@ function drawNode(n){
         const lp = placeAngleLabel(v, a, b, r, label);
         n._lp = lp;                                      // 供 TikZ 导出复用同一落点
         s += `<text x="${sx(lp.x)}" y="${sy(lp.y)}"
-          style="fill:${col};stroke:#fff;stroke-width:3.2;paint-order:stroke;stroke-linejoin:round;dominant-baseline:central;font:italic 12.5px 'Times New Roman',Times,serif;text-anchor:middle">${label}</text>`;
+          style="fill:${col};stroke:#fff;stroke-width:${haloW(FS_ANG)};paint-order:stroke;stroke-linejoin:round;dominant-baseline:central;font:italic ${FS_ANG}px 'Times New Roman',Times,serif;text-anchor:middle">${label}</text>`;
       }
       return s;
     }
@@ -728,7 +743,7 @@ function drawNode(n){
       if (n.label){
         const d = n.dir || [8, -8];
         s += `<text x="${sx(p.x) + d[0]}" y="${sy(p.y) + d[1]}"
-          style="fill:${ink};stroke:#fff;stroke-width:3.4;paint-order:stroke;stroke-linejoin:round;font:italic 15px 'Times New Roman',Times,serif;text-anchor:middle">${n.label}</text>`;
+          style="fill:${ink};stroke:#fff;stroke-width:${haloW(FS_PT)};paint-order:stroke;stroke-linejoin:round;font:italic ${FS_PT}px 'Times New Roman',Times,serif;text-anchor:middle">${n.label}</text>`;
       }
       return s;
     }
@@ -758,7 +773,7 @@ function render(){
     if (n.step > curStep) continue;
     const html = drawNode(n);
     if (!html) continue;
-    (n.type === "poly" ? shapes : rest).push(html);
+    (n.type === "poly" || n.type === "hl" ? shapes : rest).push(html);
   }
   // 拖动手柄永远画在最上层
   const handles = [];
@@ -861,7 +876,7 @@ const NOTE = {
   1: "原题：AB=AC、∠BAC=α；CA 绕 C 逆时针转 90°−α 得 CD（CD=CA=AB）；E=AB∩CD；F=AD∩CB 延长线。第 (1) 问已得 ∠AFC=45°。",
   2: "∠ACE=∠ACD=<em>90°−α</em>，∠CAE=α ⟹ ∠AEC=<em>90°</em>：<b>AB⊥CD</b>，E 就是 C 到 AB 的垂足。",
   3: "取 BC 中点 M（空心圈）：△BEC 为直角三角形，斜边中线 <em>EM=½BC</em>；又 AM⊥BC（等腰三线合一）。",
-  4: "作 DK⊥CF 于 K：∠DKC=∠BMA=90°、∠DCK=∠BAM=α/2、CD=AB ⟹ <b>△DKC≌△BMA</b>(AAS) ⟹ DK=BM=½BC；Rt△DKF 中 ∠DFK=45° ⟹ <b>DF=√2·DK=√2·½BC</b>。",
+  4: "作 DN⊥CF 于 N：∠DNC=∠BMA=90°、∠DCK=∠BAM=α/2、CD=AB ⟹ <b>△DNC≌△BMA</b>(AAS) ⟹ DN=BM=½BC；Rt△DNF 中 ∠DFN=45° ⟹ <b>DF=√2·DN=√2·½BC</b>。",
   5: "所以 H 在 M 处时 DF=√2·EH。反之 DF=√2EH ⟹ EH=½BC；而 G 是 CF 中点，CH=½CB ⟺ GH=CG−CH=½CF−½CB=<em>½BF</em>。拖 H 到空心圈，两个等式同时变绿。"
 };
 function updatePanel(){
@@ -1188,8 +1203,6 @@ markStep();
 render();
 NODES.get("H").par.s = 0.42;
 
-/* ---------- 状态条：H 追到 BC 中点时点亮 ---------- */
-const _T = Math.tan;
 const origRender2 = render;
 render = function(){
   origRender2();

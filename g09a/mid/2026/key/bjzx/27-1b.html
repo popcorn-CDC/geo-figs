@@ -105,6 +105,8 @@
    ============================================================ */
 const SQ = Math.PI / 180;
 const S = 108, CX = 54, CY = 268, W = 420, H = 308;   // 单位 → 像素
+let FS_PT = 15, FS_ANG = 12.5;   // 点标签 / 角标签字号（SVG 用户单位，随 viewBox 缩放）
+const haloW = fs => Math.max(0.8, fs * 0.26).toFixed(2);
 const sx = x => CX + x * S, sy = y => CY - y * S;
 const ux = X => (X - CX) / S, uy = Y => (CY - Y) / S;
 
@@ -250,6 +252,12 @@ function tickNode(id, segId, n, f, o){
   return def(id, Object.assign({type: "tick", parents: [segId], par: {n, f: f == null ? 0.5 : f},
     build(){ return {k: "tick", s: val(segId), n, f: this.par.f}; }}, o));
 }
+function hlNode(id, segId, o){
+  // 荧光笔标记：沿线段铺一条半透明粗带，同色即「等长族」。替代等长刻线（用户习惯）。
+  return def(id, Object.assign({type: "hl", parents: [segId], par: {w: 7},
+    doc: id + " := Highlighter(" + segId + ")   -- 荧光笔，同色 = 等长",
+    build(){ const s = val(segId); return {k: "seg", a: "-", b: "-", p: s.p, q: s.q, seg: true}; }}, o));
+}
 function labelNode(id, x, y, text, o){
   return def(id, Object.assign({type: "text", par: {x, y, text},
     build(){ return {k: "text", x: this.par.x, y: this.par.y, text: this.par.text}; }}, o));
@@ -392,10 +400,11 @@ intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [17, -19], size: 1, step: 
   doc: "E := AB ∩ CD"});
 
 angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "var(--blue,#2f6fed)"});
-tickNode("tAB", "sAB", 1, 0.55, {step: 2, color: "var(--green,#2f9e63)"});
-tickNode("tAC", "sAC", 1, 0.32, {step: 2, color: "var(--green,#2f9e63)"});
 angleNode("aC", "C", "A", "D", 0.74, "90°−α", {step: 3, color: "var(--orange,#e8833a)"});
 
+segNode("cAB", "A", "B", {step: 2, w: 2.6, color: "#d6457a"});
+segNode("cAC", "A", "C", {step: 2, w: 2.6, color: "#d6457a"});
+segNode("cCD", "C", "D", {step: 3, w: 2.6, color: "#d6457a"});
 angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 4, color: "var(--green,#2f9e63)"});
 
 /* ---------- 自检项 ---------- */
@@ -458,7 +467,7 @@ function textHalf(text){
   if (_mhCache[key]) return _mhCache[key];
   let hw = 0.05 * key.length, hh = 0.065;
   const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  t.setAttribute("style", "font:italic 12.5px 'Times New Roman',Times,serif");
+  t.setAttribute("style", `font:italic ${FS_ANG}px 'Times New Roman',Times,serif`);
   t.textContent = key;
   try {
     svg.appendChild(t);
@@ -555,6 +564,13 @@ function drawNode(n){
   const w = n.w == null ? 1.2 : n.w;
   const dash = n.dash ? ` stroke-dasharray="${n.dash}"` : "";
   switch (n.type){
+    case "hl": {
+      const {p, q} = n._v;
+      const w = (n.par && n.par.w) || 7;
+      if (!isFinite(p.x) || !isFinite(q.x)) return "";
+      return `<line x1="${sx(p.x)}" y1="${sy(p.y)}" x2="${sx(q.x)}" y2="${sy(q.y)}"
+        style="stroke:${col};stroke-width:${w};stroke-linecap:round;opacity:.40"/>`;
+    }
     case "poly": {
       if (n._v.pts.some(p => !isFinite(p.x) || !isFinite(p.y))) return "";
       const pts = n._v.pts.map(p => `${sx(p.x)},${sy(p.y)}`).join(" ");
@@ -582,7 +598,7 @@ function drawNode(n){
         const lp = placeAngleLabel(v, a, b, r, label);
         n._lp = lp;                                      // 供 TikZ 导出复用同一落点
         s += `<text x="${sx(lp.x)}" y="${sy(lp.y)}"
-          style="fill:${col};stroke:#fff;stroke-width:3.2;paint-order:stroke;stroke-linejoin:round;dominant-baseline:central;font:italic 12.5px 'Times New Roman',Times,serif;text-anchor:middle">${label}</text>`;
+          style="fill:${col};stroke:#fff;stroke-width:${haloW(FS_ANG)};paint-order:stroke;stroke-linejoin:round;dominant-baseline:central;font:italic ${FS_ANG}px 'Times New Roman',Times,serif;text-anchor:middle">${label}</text>`;
       }
       return s;
     }
@@ -644,7 +660,7 @@ function drawNode(n){
       if (n.label){
         const d = n.dir || [8, -8];
         s += `<text x="${sx(p.x) + d[0]}" y="${sy(p.y) + d[1]}"
-          style="fill:${ink};stroke:#fff;stroke-width:3.4;paint-order:stroke;stroke-linejoin:round;font:italic 15px 'Times New Roman',Times,serif;text-anchor:middle">${n.label}</text>`;
+          style="fill:${ink};stroke:#fff;stroke-width:${haloW(FS_PT)};paint-order:stroke;stroke-linejoin:round;font:italic ${FS_PT}px 'Times New Roman',Times,serif;text-anchor:middle">${n.label}</text>`;
       }
       return s;
     }
@@ -674,7 +690,7 @@ function render(){
     if (n.step > curStep) continue;
     const html = drawNode(n);
     if (!html) continue;
-    (n.type === "poly" ? shapes : rest).push(html);
+    (n.type === "poly" || n.type === "hl" ? shapes : rest).push(html);
   }
   // 拖动手柄永远画在最上层
   const handles = [];
