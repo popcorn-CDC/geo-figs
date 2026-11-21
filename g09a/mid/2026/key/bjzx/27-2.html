@@ -91,7 +91,7 @@
 <div class="wrap">
   <div class="head">
     <div class="ttl">27 题（2）· GH 与 BF 有什么关系时 DF = √2·EH</div>
-    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121b</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121c</div>
   </div>
 
   <div class="stage">
@@ -100,7 +100,7 @@
   </div>
 
   <div class="ctl">
-    <div class="hint">拖动图上的 <b>C</b> 点（绕 A 转）改变 α —— 整幅图跟着变，而 <b>H 始终是 BC 中点</b></div>
+    <div class="sl"><input id="alphaRange" type="range" min="3" max="88" step="0.5" value="56"></div><div class="hint">α = <b id="alphaOut">56.0°</b>　拖滑杆改变 α —— 整幅图跟着变，而 <b>H 始终是 BC 中点</b></div>
   </div>
 
   <details class="card" open>
@@ -423,24 +423,22 @@ const AC = 2;
 const RAD = d => d * SQ;
 const alphaNow = () => angAt(Pt("A"), Pt("B"), Pt("C"));   // 实测 ∠BAC
 
+def("alp", {type: "none", par: {deg: 56}, doc: "α（滑杆驱动）", build(){ return {k: "none"}; }});
+const alDeg = () => NODES.get("alp").par.deg;
 derivedPoint("A", () => ({k: "pt", x: 0, y: 0}), {doc: "A := Point(0,0)（固定）"});
 
 /* C 可拖：只取方向，长度锁在 AC 上；拖它等于改 α */
-def("C", {type: "point", drag: "free", par: {x: 0.585, y: 1.913},
-  label: "C", dir: [12, -15], size: 1,
-  doc: "C := 方向可拖，|AC| 固定（拖 C 改变 α）",
-  build(){ const A = Pt("A"); const dx = this.par.x - A.x, dy = this.par.y - A.y;
-    const L = Math.hypot(dx, dy) || 1;
-    return {k: "pt", x: A.x + AC * dx / L, y: A.y + AC * dy / L}; }});
+derivedPoint("C", () => { const A = Pt("A"), f = (45 + alDeg() / 2) * Math.PI / 180;
+  return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
+  {label: "C", dir: [12, -15], size: 1, parents: ["A", "alp"],
+   doc: "C := A + AC·(cos(45°+α/2), sin(45°+α/2))"});
 
-derivedPoint("B", () => { const A = Pt("A"), C = Pt("C");
-  const phi = Math.atan2(C.y - A.y, C.x - A.x), a = 2 * (phi - Math.PI / 4);
-  const f = phi - a;                                  // = 45° − α/2
+derivedPoint("B", () => { const A = Pt("A"), f = (45 - alDeg() / 2) * Math.PI / 180;
   return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
   {label: "B", dir: [14, -12], size: 1, parents: ["A", "C"],
    doc: "B := A + AB·(cos(45°−α/2), sin(45°−α/2))，AB = AC"});
 
-rotPoint("D", "A", () => 90 - alphaNow(), "C",
+rotPoint("D", "A", () => 90 - alDeg(), "C",
   {label: "D", dir: [-20, 20], size: 1, doc: "D := Rotate(A, 90°−α, C)"});
 
 lineNode("lAD", "A", "D", {w: 0});
@@ -1203,7 +1201,13 @@ function importProjectFile(ev){
 svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 markStep();
 render();
-
+const _ar2 = document.getElementById("alphaRange");
+_ar2.addEventListener("input", ev=>{
+  NODES.get("alp").par.deg = +ev.target.value;
+  document.getElementById("alphaOut").textContent = (+ev.target.value).toFixed(1) + "°";
+  render();
+});
+document.getElementById("alphaOut").textContent = NODES.get("alp").par.deg.toFixed(1) + "°";
 
 function syncFig2(){
   const el = document.getElementById("status");
