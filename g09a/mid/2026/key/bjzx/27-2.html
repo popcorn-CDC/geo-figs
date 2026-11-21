@@ -53,9 +53,10 @@
   .src{font-size:12px;color:var(--muted,#6b7280)}
   .stage{border:1px solid var(--line,#e3e5e9);border-radius:14px;background:#fff;overflow:hidden;position:relative}
   .stage svg{display:block;width:100%;height:auto}
-  .status{position:absolute;left:12px;bottom:10px;font:600 12.5px/1 -apple-system,sans-serif;
-    color:var(--muted,#6b7280);background:rgba(255,255,255,.86);padding:6px 9px;border-radius:8px}
+  .status{font:600 12.5px/1.5 -apple-system,sans-serif;color:var(--muted,#6b7280);margin:8px 2px 0}
   .status.ok{color:#2f9e63}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted,#6b7280);margin:6px 2px 0}
+  .legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:2px;margin-right:5px}
   .ctl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 2px 4px;font-size:13px}
   .ctl .sl{flex:1 1 240px;min-width:200px}
   .ctl input[type=range]{width:100%}
@@ -91,13 +92,14 @@
 <div class="wrap">
   <div class="head">
     <div class="ttl">27 题（2）· GH 与 BF 有什么关系时 DF = √2·EH</div>
-    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121c</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121g</div>
   </div>
 
   <div class="stage">
     <svg id="svg" viewBox="0 0 420 308" xmlns="http://www.w3.org/2000/svg"></svg>
-    <div class="status" id="status"></div>
   </div>
+  <div class="status" id="status"></div>
+  <div class="legend"><span><i style="background:#E8590C"></i>要比较的两段 GH、BF</span><span><i style="background:#1C7ED6"></i>有 √2 关系的两段 DF、EH</span><span><i style="background:#2B8A3E"></i>等于 ½BC 的 DN</span><span><i style="background:#7048E8"></i>角度</span></div>
 
   <div class="ctl">
     <div class="sl"><input id="alphaRange" type="range" min="3" max="88" step="0.5" value="56"></div><div class="hint">α = <b id="alphaOut">56.0°</b>　拖滑杆改变 α —— 整幅图跟着变，而 <b>H 始终是 BC 中点</b></div>
@@ -113,7 +115,7 @@
 <span class="mtx">H</span> 是 <span class="mtx">BC</span> 中点，则 <span class="mtx"><span class="up">Rt</span>△ CEB</span> 的斜边中线 <span class="mtx">EH=<span class="frac"><span>1</span><span>2</span></span>BC</span>，条件又变成 <span class="mtx">NF=<span class="frac"><span>1</span><span>2</span></span>BC</span>。</div>
 <div class="why"><b>③ 把 <span class="mtx">NF</span> 和 <span class="mtx"><span class="frac"><span>1</span><span>2</span></span>BC</span> 接上</b>　这正是 <em><span class="mtx">△ DNC≌△ BHA</span></em>：<span class="mtx">∠ DCN=<span class="frac"><span>α</span><span>2</span></span>=∠ BAH</span>、两个直角、<span class="mtx">CD=AB</span>，AAS 齐了 ⟹ <span class="mtx">DN=BH=<span class="frac"><span>1</span><span>2</span></span>BC</span>；而 <span class="mtx">△ DNF</span> 等腰直角，故 <span class="mtx">NF=DN=<span class="frac"><span>1</span><span>2</span></span>BC</span>。</div>
 <p>最后"<span class="mtx">GH</span> 和 <span class="mtx">BF</span> 什么关系"用中点算最快：设 <span class="mtx">HG=a</span>、<span class="mtx">GB=b</span>，两三行就出来（见 ②⑤）。</p>
-<p class="hint">颜色：<b style="color:#d6457a">玫红</b> = 半个 <span class="mtx">BC</span> 那一族（<span class="mtx">DN</span>、<span class="mtx">BH</span>）；<b style="color:#0b8a8a">青色</b> = 全等的两条斜边（<span class="mtx">CD</span>、<span class="mtx">AB</span>）；橙段 <span class="mtx">GH</span> 与绿段 <span class="mtx">BF</span> 是要比的两段。</p></div>
+<p class="hint">颜色：<b style="color:#2B8A3E">绿色</b> = 都等于半个 <span class="mtx">BC</span>（<span class="mtx">DN</span>、<span class="mtx">BH</span>）；<b style="color:#1C7ED6">蓝色</b> = 要证 <span class="mtx"><span class="sqrt">√<span class="rad">2</span></span></span> 关系的两段（<span class="mtx">DF</span>、<span class="mtx">EH</span>）；<b style="color:#E8590C">橙色</b> = 要比的两段（<span class="mtx">GH</span>、<span class="mtx">BF</span>）。</p></div>
   </details>
   <details class="card">
     <summary><b>②</b> 规范解答</summary>
@@ -425,7 +427,7 @@ const alphaNow = () => angAt(Pt("A"), Pt("B"), Pt("C"));   // 实测 ∠BAC
 
 def("alp", {type: "none", par: {deg: 56}, doc: "α（滑杆驱动）", build(){ return {k: "none"}; }});
 const alDeg = () => NODES.get("alp").par.deg;
-derivedPoint("A", () => ({k: "pt", x: 0, y: 0}), {doc: "A := Point(0,0)（固定）"});
+derivedPoint("A", () => ({k: "pt", x: 0, y: 0}), {label: "A", dir: [-19, -2], size: 1, doc: "A := Point(0,0)（固定）"});
 
 /* C 可拖：只取方向，长度锁在 AC 上；拖它等于改 α */
 derivedPoint("C", () => { const A = Pt("A"), f = (45 + alDeg() / 2) * Math.PI / 180;
@@ -451,42 +453,43 @@ segNode("sAC", "A", "C", {step: 1, w: 1.5});
 segNode("sCD", "C", "D", {step: 1, w: 1.5});
 segNode("sCF", "C", "F", {step: 1, w: 1.5});
 segNode("sAF", "A", "F", {step: 1, w: 1.5});
-polyNode("triABC", ["A", "B", "C"], {step: 1, fill: "rgba(47,111,237,0.07)"});
-polyNode("triACD", ["A", "C", "D"], {step: 1, fill: "rgba(232,131,58,0.11)"});
+polyNode("triABC", ["A", "B", "C"], {step: 1, fill: "none"});
+polyNode("triACD", ["A", "C", "D"], {step: 1, fill: "none"});
 
 intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [17, -19], size: 1, step: 1,
   doc: "E := AB ∩ CD"});
 
-angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "var(--blue,#2f6fed)"});
-angleNode("aC", "C", "A", "D", 0.74, "90°−α", {step: 3, color: "var(--orange,#e8833a)"});
-angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 3, color: "var(--green,#2f9e63)"});
+angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "#7048E8"});
+angleNode("aC", "C", "A", "D", 0.52, "90°−α", {step: 3, color: "#7048E8"});
+angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 3, color: "#7048E8"});
 
 /* G：CF 中点；H：BC 中点（固定，不拖） */
 midPoint("G", "C", "F", {label: "G", dir: [12, -12], size: 1, step: 3, doc: "G := MidPoint(C, F)"});
 midPoint("H", "B", "C", {label: "H", dir: [16, -16], size: 1, step: 3,
   doc: "H := MidPoint(B, C)   -- 结论位置，固定不动"});
-segNode("sEH", "E", "H", {step: 3, w: 2.4, color: "#8b5cf6"});
-segNode("sAH", "A", "H", {step: 3, w: 1.0, dash: "5 4", color: "var(--muted,#6b7280)"});
-rightNode("rH", "H", "B", "A", 0.11, {step: 3, color: "var(--muted,#6b7280)"});
-segNode("sBH", "B", "H", {step: 4, w: 2.6, color: "#d6457a"});
-segNode("sGH", "G", "H", {step: 5, w: 3.4, color: "var(--orange,#e8833a)"});
-segNode("sBF", "B", "F", {step: 5, w: 3.4, color: "var(--green,#2f9e63)"});
+segNode("sEH", "E", "H", {step: 3, w: 2.4, color: "#1C7ED6"});
+segNode("sAH", "A", "H", {step: 3, w: 1.0, dash: "5 4", color: "#868E96"});
+rightNode("rH", "H", "B", "A", 0.11, {step: 3, color: "#868E96"});
+segNode("sBH", "B", "H", {step: 4, w: 1.5});
+segNode("sGH", "G", "H", {step: 5, w: 3.2, color: "#E8590C"});
+segNode("cDF", "D", "F", {step: 5, w: 2.4, color: "#1C7ED6"});
+segNode("sBF", "B", "F", {step: 5, w: 3.2, color: "#E8590C"});
 
 /* 第 2 步：AB ⊥ CD */
 rightNode("rE", "E", "A", "C", 0.105, {step: 2});
 
 /* 第 4 步：作 DN ⊥ CF，△DNC ≌ △BHA */
 perpLineNode("plDN", "C", "F", "D", {step: 4, w: 0});
-intersectNode("N", "sCF", "plDN", 1, {label: "N", dir: [10, -12], size: 1, step: 4,
+intersectNode("N", "sCF", "plDN", 1, {label: "N", dir: [0, -18], size: 1, step: 4,
   doc: "N := CF ∩ PerpLine(CF, D)"});
-segNode("sDN", "D", "N", {step: 4, w: 2.6, color: "#d6457a"});
+segNode("sDN", "D", "N", {step: 4, w: 2.4, color: "#2B8A3E"});
 rightNode("rN", "N", "C", "D", 0.10, {step: 4});
-polyNode("triDNC", ["D", "N", "C"], {step: 4, fill: "rgba(214,69,122,0.13)"});
-polyNode("triBHA", ["B", "H", "A"], {step: 4, fill: "rgba(47,158,99,0.14)"});
-angleNode("aA2", "A", "B", "H", 0.58, "α/2", {step: 4, color: "#8b5cf6"});
-angleNode("aC2", "C", "D", "N", 0.30, "", {step: 4, color: "#8b5cf6"});
-segNode("cCD", "C", "D", {step: 4, w: 2.6, color: "#0b8a8a"});
-segNode("cAB", "A", "B", {step: 4, w: 2.6, color: "#0b8a8a"});
+polyNode("triDNC", ["D", "N", "C"], {step: 4, fill: "none"});
+polyNode("triBHA", ["B", "H", "A"], {step: 4, fill: "none"});
+angleNode("aA2", "A", "B", "H", 0.58, "α/2", {step: 4, color: "#7048E8"});
+angleNode("aC2", "C", "D", "N", 0.30, "", {step: 4, color: "#7048E8"});
+segNode("cCD", "C", "D", {step: 4, w: 1.5, color: "#23252B"});
+segNode("cAB", "A", "B", {step: 4, w: 1.5, color: "#23252B"});
 
 /* ---------- 自检项 ---------- */
 const CHECKS = [

@@ -53,9 +53,10 @@
   .src{font-size:12px;color:var(--muted,#6b7280)}
   .stage{border:1px solid var(--line,#e3e5e9);border-radius:14px;background:#fff;overflow:hidden;position:relative}
   .stage svg{display:block;width:100%;height:auto}
-  .status{position:absolute;left:12px;bottom:10px;font:600 12.5px/1 -apple-system,sans-serif;
-    color:var(--muted,#6b7280);background:rgba(255,255,255,.86);padding:6px 9px;border-radius:8px}
+  .status{font:600 12.5px/1.5 -apple-system,sans-serif;color:var(--muted,#6b7280);margin:8px 2px 0}
   .status.ok{color:#2f9e63}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted,#6b7280);margin:6px 2px 0}
+  .legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:2px;margin-right:5px}
   .ctl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 2px 4px;font-size:13px}
   .ctl .sl{flex:1 1 240px;min-width:200px}
   .ctl input[type=range]{width:100%}
@@ -91,13 +92,14 @@
 <div class="wrap">
   <div class="head">
     <div class="ttl">27 题（1）· 求 ∠AFC</div>
-    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121c</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121g</div>
   </div>
 
   <div class="stage">
     <svg id="svg" viewBox="0 0 420 308" xmlns="http://www.w3.org/2000/svg"></svg>
-    <div class="status" id="status"></div>
   </div>
+  <div class="status" id="status"></div>
+  <div class="legend"><span><i style="background:#2B8A3E"></i>同长度族 AB = AC = CD</span><span><i style="background:#7048E8"></i>角度标记</span></div>
 
   <div class="ctl">
     <div class="sl"><input id="alphaRange" type="range" min="3" max="88" step="0.5" value="56"></div><div class="hint">α = <b id="alphaOut">56.0°</b>　拖滑杆改变 α，看 ∠AFC 变不变</div>
@@ -112,7 +114,7 @@
 · <span class="mtx">∠ CAF</span> ← 旋转：<span class="mtx">CA=CD</span> 让 <span class="mtx">△ ACD</span> 变成等腰，顶角 <span class="mtx">90°-α</span>，底角就是 <span class="mtx">45°+<span class="frac"><span>α</span><span>2</span></span></span>（<span class="mtx">A</span>、<span class="mtx">D</span>、<span class="mtx">F</span> 共线，所以 <span class="mtx">∠ CAF</span> 就是它）；<br>
 · <span class="mtx">∠ AFC</span> ← 前两个算出来，用它收尾。</div>
 <p>这就是这道题的"模型"：<em>等腰 + 旋转 ⟹ 用底角公式把顶角劈成两半</em>。</p>
-<p class="hint">图上玫红色的三条边 <span class="mtx">AB</span>、<span class="mtx">AC</span>、<span class="mtx">CD</span> 是同一长度族（都等于 <span class="mtx">AC</span>）。</p></div>
+<p class="hint">图上<b style="color:#2B8A3E">绿色</b>的三条边 <span class="mtx">AB</span>、<span class="mtx">AC</span>、<span class="mtx">CD</span> 是同一长度族（都等于 <span class="mtx">AC</span>）；<b style="color:#7048E8">紫色</b>弧是角度标记。</p></div>
   </details>
   <details class="card">
     <summary><b>②</b> 规范解答</summary>
@@ -446,19 +448,19 @@ segNode("sAC", "A", "C", {step: 1, w: 1.5});
 segNode("sCD", "C", "D", {step: 1, w: 1.5});
 segNode("sCF", "C", "F", {step: 1, w: 1.5});
 segNode("sAF", "A", "F", {step: 1, w: 1.5});
-polyNode("triABC", ["A", "B", "C"], {step: 1, fill: "rgba(47,111,237,0.07)"});
-polyNode("triACD", ["A", "C", "D"], {step: 1, fill: "rgba(232,131,58,0.11)"});
+polyNode("triABC", ["A", "B", "C"], {step: 1, fill: "rgba(0,0,0,0.035)"});
+polyNode("triACD", ["A", "C", "D"], {step: 1, fill: "rgba(0,0,0,0.035)"});
 
 intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [17, -19], size: 1, step: 1,
   doc: "E := AB ∩ CD"});
 
-angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "var(--blue,#2f6fed)"});
-angleNode("aC", "C", "A", "D", 0.74, "90°−α", {step: 3, color: "var(--orange,#e8833a)"});
+angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "#7048E8"});
+angleNode("aC", "C", "A", "D", 0.52, "90°−α", {step: 3, color: "#7048E8"});
 
-segNode("cAB", "A", "B", {step: 2, w: 2.6, color: "#d6457a"});
-segNode("cAC", "A", "C", {step: 2, w: 2.6, color: "#d6457a"});
-segNode("cCD", "C", "D", {step: 3, w: 2.6, color: "#d6457a"});
-angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 4, color: "var(--green,#2f9e63)"});
+segNode("cAB", "A", "B", {step: 2, w: 2.6, color: "#2B8A3E"});
+segNode("cAC", "A", "C", {step: 2, w: 2.6, color: "#2B8A3E"});
+segNode("cCD", "C", "D", {step: 3, w: 2.6, color: "#2B8A3E"});
+angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 4, color: "#7048E8"});
 
 /* ---------- 自检项 ---------- */
 const CHECKS = [
