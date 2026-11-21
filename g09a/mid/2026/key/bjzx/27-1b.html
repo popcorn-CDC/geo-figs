@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>（1）∠AFC = 45°：等腰 + 旋转求角</title>
+<style>
+  :root{
+    --ink: var(--foreground, #1d1f24);
+    --muted: var(--muted-foreground, #6b7280);
+    --line: var(--border, #d7dbe0);
+    --card: var(--card, #ffffff);
+    --blue: var(--accent, #2f6fed);
+    --orange: #e8833a;
+    --green: #2f9e63;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:transparent;color:var(--ink);
+    font:14px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif}
+  .app{display:flex;gap:12px;align-items:flex-start}
+  .stage{flex:1 1 auto;min-width:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+  svg{display:block;width:100%;height:auto;touch-action:none}
+  aside{flex:0 0 306px;max-width:306px}
+  h1{font-size:14px;margin:0 0 6px;font-weight:650;letter-spacing:.2px}
+  .sub{font-size:12px;color:var(--muted);margin:0 0 10px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:9px;background:var(--card)}
+  .card h2{font-size:11.5px;margin:0 0 8px;font-weight:650;color:var(--muted);letter-spacing:.6px;text-transform:none}
+  .row{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:2.5px 0}
+  .row b{font-variant-numeric:tabular-nums;font-weight:600}
+  .ok{color:var(--green)}
+  .bad{color:#d0342c}
+  .steps{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px}
+  button{font:inherit;font-size:12px;padding:3.5px 9px;border:1px solid var(--line);border-radius:7px;
+    background:transparent;color:inherit;cursor:pointer;transition:.14s}
+  button:hover{border-color:var(--blue);color:var(--blue)}
+  button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  button.ghost{font-size:11.5px;padding:2.5px 7px;color:var(--muted)}
+  .note{font-size:12.5px;color:var(--ink);min-height:52px;margin-top:2px}
+  .note em{color:var(--orange);font-style:normal;font-weight:600}
+  pre{font:11.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;
+    margin:0;max-height:190px;overflow:auto;color:var(--muted)}
+  details summary{font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none}
+  .slider{width:100%;margin:6px 0 2px}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:6px}
+  @media (max-width:760px){ .app{flex-direction:column} aside{flex:1 1 auto;max-width:none;width:100%} }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 420 308" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <aside>
+    <h1>27(1) 求 ∠AFC —— 为什么恒为 45°</h1>
+    <p class="sub">2026 北京中学 初三（上）期中 27 题 ｜ 拉 α 滑杆：三个内角一起变，∠AFC 一直是 45°。</p>
+
+    <div class="card">
+      <h2>分步推演</h2>
+      <div class="steps" id="steps"></div>
+      <div class="note" id="note"></div>
+    </div>
+
+    <div class="card">
+      <h2>结构自检（实时）</h2>
+      <div id="checks"></div>
+      <div class="hint">全部由构造保证，随拖动重算，残差 ≈ 0。</div>
+    </div>
+
+    <div class="card">
+      <h2>动点 / 播放</h2>
+      <div id="sliders"></div>
+      <div style="margin-top:7px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button id="play">▶ 播放</button>
+        <button class="ghost" id="reset">复位</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>结构化对象</h2>
+      <details>
+        <summary>展开：本图全部定义（可复现）</summary>
+        <pre id="struct"></pre>
+      </details>
+      <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">
+        <button class="ghost" id="btn-tikz">导出 TikZ</button>
+        <button class="ghost" id="btn-json">导出工程 JSON</button>
+        <button class="ghost" id="btn-png">导出 PNG</button>
+        <button class="ghost" id="btn-svg">导出 SVG</button>
+        <button class="ghost" id="btn-load">载入工程</button>
+        <input type="file" id="file" accept=".json,.algeo" style="display:none">
+      </div>
+      <pre id="dump" style="margin-top:7px;display:none"></pre>
+    </div>
+  </aside>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   小型约束几何引擎
+   - 每个对象 = 一个定义（父对象 + 构造规则），按依赖顺序求值
+   - 拖动只改自由度（自由点、线段上的参数），派生对象全部重算
+   - 图形因此是「结构」而不是「坐标拼出来的图」
+   ============================================================ */
+const SQ = Math.PI / 180;
+const S = 108, CX = 54, CY = 268, W = 420, H = 308;   // 单位 → 像素
+const sx = x => CX + x * S, sy = y => CY - y * S;
+const ux = X => (X - CX) / S, uy = Y => (CY - Y) / S;
+
+const NODES = new Map(), SEQ = [];
+function def(id, o){
+  if (NODES.has(id)) throw new Error("重复定义 " + id);
+  o.id = id; o.step = o.step || 1;
+  NODES.set(id, o); SEQ.push(id); return o;
+}
+function val(id){ const n = NODES.get(id); if (!n) throw new Error("缺少对象 " + id); return n._v; }
+function Pt(id){ const v = val(id); if (!v || v.k !== "pt") throw new Error(id + " 不是点"); return v; }
+function rebuild(){ for (const id of SEQ){ const n = NODES.get(id); n._v = n.build.call(n); } }
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+function angAt(v, a, b){                       // ∠AVB，单位度
+  const u = {x: a.x - v.x, y: a.y - v.y}, w = {x: b.x - v.x, y: b.y - v.y};
+  let d = Math.atan2(u.x * w.y - u.y * w.x, u.x * w.x + u.y * w.y) / SQ;
+  return Math.abs(d);
+}
+
+/* ---------- 构造原语 ---------- */
+function freePoint(id, x, y, o){
+  return def(id, Object.assign({
+    type: "point", par: {x, y}, drag: "free",
+    doc: id + " := Point(" + x + ", " + y + ")        -- 自由点，可拖动",
+    build(){ return {k: "pt", x: this.par.x, y: this.par.y}; }
+  }, o));
+}
+function derivedPoint(id, fn, o){
+  return def(id, Object.assign({type: "point", build: fn}, o));
+}
+function midPoint(id, a, b, o){
+  return derivedPoint(id, function(){
+    const A = Pt(a), B = Pt(b);
+    return {k: "pt", x: (A.x + B.x) / 2, y: (A.y + B.y) / 2};
+  }, Object.assign({parents: [a, b], doc: id + " := MidPoint(" + a + ", " + b + ")"}, o));
+}
+function onSeg(id, a, b, s, o){
+  return def(id, Object.assign({
+    type: "point", par: {s}, drag: "seg", a, b, parents: [a, b],
+    doc: id + " := PointOnSegment(" + a + ", " + b + ", s)   -- s∈[0,1] 可拖动",
+    build(){ const A = Pt(a), B = Pt(b), t = this.par.s;
+             return {k: "pt", x: A.x + (B.x - A.x) * t, y: A.y + (B.y - A.y) * t}; }
+  }, o));
+}
+function rotPoint(id, p, deg, center, o){
+  // deg 可以是数字、"角节点 id"（引用该角当前度数，对应 algeo 的 alpha.value）、或 ()=>度数
+  const refAng = typeof deg === "string" || typeof deg === "function";
+  const degOf = () => (typeof deg === "function") ? deg()
+                   : (typeof deg === "string") ? angleDegOf(deg)
+                   : deg;
+  const par = [p, center].concat(typeof deg === "string" ? [deg] : []);
+  const showDeg = typeof deg === "string" ? "∠" + deg : (typeof deg === "function" ? "<角函数>" : deg + "°");
+  return derivedPoint(id, function(){
+    const P0 = Pt(p), C = Pt(center), a = degOf() * SQ;
+    const dx = P0.x - C.x, dy = P0.y - C.y;
+    return {k: "pt", x: C.x + dx * Math.cos(a) - dy * Math.sin(a),
+                    y: C.y + dx * Math.sin(a) + dy * Math.cos(a)};
+  }, Object.assign({parents: par, doc: id + " := Rotate(" + p + ", " + showDeg + ", " + center + ")"}, o));
+}
+function segNode(id, a, b, o){
+  return def(id, Object.assign({type: "seg", parents: [a, b],
+    build(){ return {k: "seg", a, b, p: Pt(a), q: Pt(b), seg: true}; }}, o));
+}
+function lineNode(id, a, b, o){
+  return def(id, Object.assign({type: "line", parents: [a, b],
+    build(){ return {k: "line", a, b, p: Pt(a), q: Pt(b)}; }}, o));
+}
+/* ---------- 垂线 / 平行线 / 线上点（对齐 algeo 的 PerpLine(Line,C)、Point(Line,?)） ---------- */
+function perpLineNode(id, a, b, through, o){
+  // 过 through 点、垂直于 AB 的无限直线
+  return def(id, Object.assign({type: "line", parents: [a, b, through],
+    doc: id + " := PerpLine(Line(" + a + "," + b + "), " + through + ")",
+    build(){ const A = Pt(a), B = Pt(b), T = Pt(through);
+             let dx = B.x - A.x, dy = B.y - A.y;
+             const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+             return {k: "line", a: "-", b: "-", p: T, q: {x: T.x - dy, y: T.y + dx}}; }}, o));
+}
+function paraLineNode(id, a, b, through, o){
+  // 过 through 点、平行于 AB 的无限直线
+  return def(id, Object.assign({type: "line", parents: [a, b, through],
+    doc: id + " := ParallelLine(Line(" + a + "," + b + "), " + through + ")",
+    build(){ const A = Pt(a), B = Pt(b), T = Pt(through);
+             let dx = B.x - A.x, dy = B.y - A.y;
+             const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+             return {k: "line", a: "-", b: "-", p: T, q: {x: T.x + dx, y: T.y + dy}}; }}, o));
+}
+function onLine(id, lineId, t, o){
+  // 无限直线上的点，t 沿 p→q 方向，可拖动（一维自由度）
+  return def(id, Object.assign({
+    type: "point", par: {t}, drag: "line", lineId, parents: [lineId],
+    doc: id + " := PointOnLine(" + lineId + ", t)   -- 一维自由度，可拖动",
+    build(){ const L = val(lineId), t0 = this.par.t;
+             return {k: "pt", x: L.p.x + (L.q.x - L.p.x) * t0,
+                            y: L.p.y + (L.q.y - L.p.y) * t0}; }}, o));
+}
+function polyNode(id, ids, o){
+  return def(id, Object.assign({type: "poly", parents: ids,
+    build(){ return {k: "poly", ids, pts: ids.map(Pt)}; }}, o));
+}
+function circleNode(id, c, through, o){
+  return def(id, Object.assign({type: "cir", parents: [c, through],
+    build(){ const C = Pt(c), T = Pt(through); return {k: "cir", c: C, r: dist(C, T)}; }}, o));
+}
+function circleR(id, c, rFn, o){
+  // 半径由表达式给：circleR("c1","E",()=>dist(Pt("A"),Pt("F"))) 对应 algeo 的 Circle(E, Segment(A,F).length)
+  return def(id, Object.assign({type: "cir", parents: [c],
+    doc: id + " := Circle(" + c + ", <长度表达式>)",
+    build(){ const C = Pt(c);
+             const r = (typeof rFn === "function") ? rFn() : rFn;
+             return {k: "cir", c: C, r}; }}, o));
+}
+function angleDegOf(id){
+  // 读角节点的实际度数，供 rotPoint 引用（对应 algeo 的 Rotate(Ray, alpha.value, D)）
+  const n = NODES.get(id), v = n && n._v;
+  if (!v) return NaN;
+  if (v.k === "angle") return angAt(v.v, v.a, v.b);
+  if (typeof v.deg === "number") return v.deg;
+  if (typeof v === "number") return v;
+  return NaN;
+}
+function arcNode(id, v, a, b, r, o){
+  // 以 v 为心、半径 r，从 va 到 vb 的劣弧（教材式作图痕迹；r 可传函数）
+  return def(id, Object.assign({type: "arc", parents: [v, a, b],
+    par: {r: typeof r === "function" ? null : r},
+    doc: id + " := Arc(" + v + ", r=" + (typeof r === "function" ? "<表达式>" : r) + ", " + a + "→" + b + ")",
+    build(){ const R = (typeof r === "function") ? r() : this.par.r;
+             return {k: "arc", v: Pt(v), a: Pt(a), b: Pt(b), r: R}; }}, o));
+}
+function angleNode(id, v, a, b, r, label, o){
+  return def(id, Object.assign({type: "angle", parents: [v, a, b], par: {r, label},
+    build(){ return {k: "angle", v: Pt(v), a: Pt(a), b: Pt(b), r: this.par.r, label: this.par.label}; }}, o));
+}
+// 角弧上的等角刻线（两条弧各一道 ⇒ 两角相等，只需标一个数值）
+function arcTickNode(id, v, a, b, r, o){
+  return def(id, Object.assign({type: "arctick", parents: [v, a, b], par: {r},
+    build(){ return {k: "arctick", v: Pt(v), a: Pt(a), b: Pt(b), r: this.par.r}; }}, o));
+}
+function rightNode(id, v, a, b, size, o){
+  return def(id, Object.assign({type: "right", parents: [v, a, b], par: {size: size || 0.13},
+    build(){ return {k: "right", v: Pt(v), a: Pt(a), b: Pt(b), size: this.par.size}; }}, o));
+}
+function tickNode(id, segId, n, f, o){
+  return def(id, Object.assign({type: "tick", parents: [segId], par: {n, f: f == null ? 0.5 : f},
+    build(){ return {k: "tick", s: val(segId), n, f: this.par.f}; }}, o));
+}
+function labelNode(id, x, y, text, o){
+  return def(id, Object.assign({type: "text", par: {x, y, text},
+    build(){ return {k: "text", x: this.par.x, y: this.par.y, text: this.par.text}; }}, o));
+}
+/* ---------- 交点 / 角平分点（对齐 algeo 的 Intersect、AngleBisector 思路） ---------- */
+function lineCirclePts(p, q, c, r){                    // 线(含线段/射线全长)与圆
+  const dx = q.x - p.x, dy = q.y - p.y, a = dx * dx + dy * dy;
+  if (a < 1e-14) return [];
+  const fx = p.x - c.x, fy = p.y - c.y;
+  const b = 2 * (fx * dx + fy * dy), cc = fx * fx + fy * fy - r * r;
+  const disc = b * b - 4 * a * cc;
+  if (disc < -1e-12) return [];
+  const s = Math.sqrt(Math.max(0, disc));
+  const ts = disc < 1e-12 ? [-b / (2 * a)] : [(-b - s) / (2 * a), (-b + s) / (2 * a)];
+  return ts.sort((u, v) => u - v).map(t => ({x: p.x + dx * t, y: p.y + dy * t, t}));
+}
+function intersectGeom(A, B){
+  const kind = o => (o && (o.k === "cir" ? "cir" : "ln"));
+  if (kind(A) === "ln" && kind(B) === "ln"){
+    const p = A.p, q = A.q, p2 = B.p, q2 = B.q;
+    const d1x = q.x - p.x, d1y = q.y - p.y, d2x = q2.x - p2.x, d2y = q2.y - p2.y;
+    const den = d1x * d2y - d1y * d2x;
+    if (Math.abs(den) < 1e-12) return [];
+    const t = ((p2.x - p.x) * d2y - (p2.y - p.y) * d2x) / den;
+    const u = ((p2.x - p.x) * d1y - (p2.y - p.y) * d1x) / den;
+    const inSeg = (v, isSeg) => !isSeg || (v >= -1e-9 && v <= 1 + 1e-9);
+    if (!inSeg(t, A.seg) || !inSeg(u, B.seg)) return [];
+    return [{x: p.x + d1x * t, y: p.y + d1y * t}];
+  }
+  if (kind(A) === "ln" && kind(B) === "cir"){
+    const pts = lineCirclePts(A.p, A.q, B.c, B.r);
+    return pts.filter(o => !A.seg || (o.t >= -1e-9 && o.t <= 1 + 1e-9));
+  }
+  if (kind(A) === "cir" && kind(B) === "ln") return intersectGeom(B, A);
+  if (kind(A) === "cir" && kind(B) === "cir"){
+    const d = Math.hypot(B.c.x - A.c.x, B.c.y - A.c.y);
+    if (d < 1e-12 || d > A.r + B.r + 1e-12 || d < Math.abs(A.r - B.r) - 1e-12) return [];
+    const a = (A.r * A.r - B.r * B.r + d * d) / (2 * d);
+    const h2 = A.r * A.r - a * a, h = Math.sqrt(Math.max(0, h2));
+    const mx = A.c.x + a * (B.c.x - A.c.x) / d, my = A.c.y + a * (B.c.y - A.c.y) / d;
+    const px = -(B.c.y - A.c.y) / d * h, py = (B.c.x - A.c.x) / d * h;
+    return h < 1e-12 ? [{x: mx, y: my}] : [{x: mx + px, y: my + py}, {x: mx - px, y: my - py}];
+  }
+  return [];
+}
+function intersectNode(id, a, b, index, o){
+  return derivedPoint(id, function(){
+    const pts = intersectGeom(val(a), val(b));
+    const q = pts[(index || 1) - 1];
+    return q ? {k: "pt", x: q.x, y: q.y} : {k: "pt", x: NaN, y: NaN};
+  }, Object.assign({parents: [a, b],
+    doc: id + " := Intersect(" + a + ", " + b + (index ? ", " + index : "") + ")  -- 交点，index 从 1 起"},
+    o));
+}
+/* ---------- 大括号标注（卷面常见：沿 a→b 外侧画括号，中间尖朝标签） ---------- */
+function bezPts(p0, c1, c2, p1, n){
+  const out = [];
+  for (let i = 0; i <= n; i++){
+    const t = i / n, u = 1 - t;
+    out.push({x: u*u*u*p0.x + 3*u*u*t*c1.x + 3*u*t*t*c2.x + t*t*t*p1.x,
+              y: u*u*u*p0.y + 3*u*u*t*c1.y + 3*u*t*t*c2.y + t*t*t*p1.y});
+  }
+  return out;
+}
+function braceGeom(p, q, side, depth){
+  const dx = q.x - p.x, dy = q.y - p.y, L = Math.hypot(dx, dy) || 1;
+  const ux0 = dx / L, uy0 = dy / L, nx = -uy0 * (side || 1), ny = ux0 * (side || 1);
+  const h = depth || 0.22;
+  const at = (s, k) => ({x: p.x + ux0 * L * s + nx * k, y: p.y + uy0 * L * s + ny * k});
+  const pts = [];
+  // 两端：几乎垂直的 1/4 弯（横向只占 3% 长度，否则看着像斜线）
+  pts.push(...bezPts(at(0, 0), at(0, 0.42 * h), at(0.012, 0.5 * h), at(0.03, 0.5 * h), 6));
+  pts.push(at(0.455, 0.5 * h));
+  // 中间尖：两段小弯拼成圆滑的尖，而不是直线折角
+  pts.push(...bezPts(at(0.455, 0.5 * h), at(0.482, 0.5 * h), at(0.5, 0.86 * h), at(0.5, h), 6));
+  pts.push(...bezPts(at(0.5, h), at(0.5, 0.86 * h), at(0.518, 0.5 * h), at(0.545, 0.5 * h), 6));
+  pts.push(at(0.97, 0.5 * h));
+  pts.push(...bezPts(at(0.97, 0.5 * h), at(0.988, 0.5 * h), at(1, 0.42 * h), at(1, 0), 6));
+  return {pts, labelAt: at(0.5, h + 0.11)};
+}
+function braceNode(id, a, b, o){
+  return def(id, Object.assign({type: "brace", parents: [a, b], par: {side: 1, depth: 0.22, label: ""},
+    build(){ return {k: "brace", p: Pt(a), q: Pt(b), side: this.par.side, depth: this.par.depth, label: this.par.label}; }}, o));
+}
+// 角平分方向上的点（内角平分线；把 ∠avb 的平分线画出来 = segNode 连它）
+function bisectorPointNode(id, v, a, b, len, o){
+  return derivedPoint(id, function(){
+    const V = Pt(v), A = Pt(a), B = Pt(b);
+    const ua = Math.hypot(A.x - V.x, A.y - V.y) || 1, ub = Math.hypot(B.x - V.x, B.y - V.y) || 1;
+    let dx = (A.x - V.x) / ua + (B.x - V.x) / ub, dy = (A.y - V.y) / ua + (B.y - V.y) / ub;
+    const L = Math.hypot(dx, dy) || 1;
+    return {k: "pt", x: V.x + dx / L * (len || 1), y: V.y + dy / L * (len || 1)};
+  }, Object.assign({parents: [v, a, b], doc: id + " := AngleBisector(" + a + ", " + v + ", " + b + ")"}, o));
+}
+
+/* ============================================================
+   27 题：AB = AC，∠BAC = α；CA 绕 C 逆时针转 90°−α 得 CD；
+   E = AB ∩ CD；F = 射线 AD ∩ CB 延长线
+   取 AC = 2，AF 恒水平（朝向照原卷：A 左下、C 上、F 右下）
+   ============================================================ */
+const AC = 2;
+const alDeg = () => NODES.get("alp").par.deg;
+const RAD = d => d * SQ;
+
+def("alp", {type: "none", par: {deg: 56},
+  doc: "α：0° < α < 90°（滑杆驱动；本图每个点都由 α 算出）",
+  build(){ return {k: "none"}; }});
+
+freePoint("A", 0, 0, {label: "A", dir: [-19, -3], size: 2,
+  doc: "A := Point(0,0)   -- 可拖，整幅图跟随平移"});
+
+derivedPoint("C", () => { const A = Pt("A"), f = RAD(45 + alDeg() / 2);
+  return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
+  {label: "C", dir: [12, -15], size: 1, parents: ["A", "alp"],
+   doc: "C := A + AC·(cos(45°+α/2), sin(45°+α/2))"});
+
+derivedPoint("B", () => { const A = Pt("A"), f = RAD(45 - alDeg() / 2);
+  return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
+  {label: "B", dir: [14, -12], size: 1, parents: ["A", "alp"],
+   doc: "B := A + AB·(cos(45°−α/2), sin(45°−α/2))，AB = AC、∠BAC = α"});
+
+rotPoint("D", "A", () => 90 - alDeg(), "C",
+  {label: "D", dir: [-7, 18], size: 1,
+   doc: "D := Rotate(A, 90°−α, C)   -- CD = CA、∠ACD = 90°−α"});
+
+lineNode("lAD", "A", "D", {w: 0});
+lineNode("lCB", "C", "B", {w: 0});
+intersectNode("F", "lAD", "lCB", 1, {label: "F", dir: [14, 8], size: 1,
+  doc: "F := Line(A,D) ∩ Line(C,B)   -- 射线 AD 与 CB 延长线交点"});
+
+segNode("sAB", "A", "B", {step: 1, w: 1.5});
+segNode("sAC", "A", "C", {step: 1, w: 1.5});
+segNode("sCD", "C", "D", {step: 1, w: 1.5});
+segNode("sCF", "C", "F", {step: 1, w: 1.5});
+segNode("sAF", "A", "F", {step: 1, w: 1.5});
+polyNode("triABC", ["A", "B", "C"], {step: 1, fill: "rgba(47,111,237,0.07)"});
+polyNode("triACD", ["A", "C", "D"], {step: 1, fill: "rgba(232,131,58,0.11)"});
+
+intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [17, -19], size: 1, step: 1,
+  doc: "E := AB ∩ CD"});
+
+angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "var(--blue,#2f6fed)"});
+tickNode("tAB", "sAB", 1, 0.55, {step: 2, color: "var(--green,#2f9e63)"});
+tickNode("tAC", "sAC", 1, 0.32, {step: 2, color: "var(--green,#2f9e63)"});
+angleNode("aC", "C", "A", "D", 0.74, "90°−α", {step: 3, color: "var(--orange,#e8833a)"});
+
+angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 4, color: "var(--green,#2f9e63)"});
+
+/* ---------- 自检项 ---------- */
+const CHECKS = [
+  {name: "∠AFC = 45°",     f: () => Math.abs(angAt(Pt("F"), Pt("A"), Pt("C")) - 45), unit: "°", tol: 1e-9},
+  {name: "∠CAF = 45°+α/2", f: () => Math.abs(angAt(Pt("A"), Pt("C"), Pt("F")) - (45 + alDeg() / 2)), unit: "°", tol: 1e-9},
+  {name: "∠ACF = 90°−α/2", f: () => Math.abs(angAt(Pt("C"), Pt("A"), Pt("F")) - (90 - alDeg() / 2)), unit: "°", tol: 1e-9},
+  {name: "∠ACD = 90°−α",   f: () => Math.abs(angAt(Pt("C"), Pt("A"), Pt("D")) - (90 - alDeg())), unit: "°", tol: 1e-9},
+  {name: "AB = AC = CD",   f: () => Math.max(Math.abs(dist(Pt("A"), Pt("B")) - AC), Math.abs(dist(Pt("C"), Pt("D")) - AC)), unit: "u", tol: 1e-9},
+  {name: "A、D、F 共线",    f: () => Math.abs(dist(Pt("A"), Pt("D")) + dist(Pt("D"), Pt("F")) - dist(Pt("A"), Pt("F"))), unit: "u", tol: 1e-9},
+  {name: "∠BAC = α",       f: () => Math.abs(angAt(Pt("A"), Pt("B"), Pt("C")) - alDeg()), unit: "°", tol: 1e-9}
+];
+const EXTRA = [
+  {label: "α",        f: () => alDeg(), dec: 1, unit: "°"},
+  {label: "∠CAF",     f: () => angAt(Pt("A"), Pt("C"), Pt("F")), dec: 4, unit: "°"},
+  {label: "∠ACF",     f: () => angAt(Pt("C"), Pt("A"), Pt("F")), dec: 4, unit: "°"},
+  {label: "∠AFC",     f: () => angAt(Pt("F"), Pt("A"), Pt("C")), dec: 4, unit: "°"},
+  {label: "∠CAF+∠ACF", f: () => angAt(Pt("A"), Pt("C"), Pt("F")) + angAt(Pt("C"), Pt("A"), Pt("F")), dec: 4, unit: "°"},
+  {label: "AF / AC",  f: () => dist(Pt("A"), Pt("F")) / AC, dec: 4}
+];
+
+/* ---------- 绘图 ---------- */
+const svg = document.getElementById("svg");
+const ink = "var(--foreground,#1d1f24)";
+const blue = "var(--accent,#2f6fed)";
+
+function clipLine(p, q){
+  const x0 = ux(0), x1 = ux(W), y0 = uy(H), y1 = uy(0);
+  const dx = q.x - p.x, dy = q.y - p.y;
+  let t0 = -1e9, t1 = 1e9;
+  const ax = [[dx, p.x, x0, x1], [dy, p.y, y0, y1]];
+  for (const [d, o, mn, mx] of ax){
+    if (Math.abs(d) < 1e-12){ if (o < mn || o > mx) return null; continue; }
+    let a = (mn - o) / d, b = (mx - o) / d;
+    if (a > b){ const t = a; a = b; b = t; }
+    t0 = Math.max(t0, a); t1 = Math.min(t1, b);
+  }
+  if (t0 > t1) return null;
+  return [{x: p.x + dx * t0, y: p.y + dy * t0}, {x: p.x + dx * t1, y: p.y + dy * t1}];
+}
+function segDistPoint(p, a, b){
+  const dx = b.x - a.x, dy = b.y - a.y, L2 = dx * dx + dy * dy || 1e-12;
+  let t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / L2;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(p.x - (a.x + dx * t), p.y - (a.y + dy * t));
+}
+let LABEL_BOXES = [];
+function labelBox(x, y, text, h){
+  const w = 0.082 * String(text).length, hh = h || 0.16;
+  return {x0: x - w / 2, y0: y - hh * 0.85, x1: x + w / 2, y1: y + hh * 0.2, t: text};
+}
+function hitsLabel(box, margin){
+  const m = margin == null ? 0.02 : margin;
+  return LABEL_BOXES.some(b => !(box.x1 + m < b.x0 || box.x0 - m > b.x1 || box.y1 + m < b.y0 || box.y0 - m > b.y1));
+}
+// 角标签的实测半宽/半高（数学单位）：审计量的是文字框四角，用中心距离会低估
+const _mhCache = {};
+function textHalf(text){
+  const key = String(text);
+  if (_mhCache[key]) return _mhCache[key];
+  let hw = 0.05 * key.length, hh = 0.065;
+  const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  t.setAttribute("style", "font:italic 12.5px 'Times New Roman',Times,serif");
+  t.textContent = key;
+  try {
+    svg.appendChild(t);
+    const b = t.getBBox();
+    if (b.width > 0){ hw = b.width / S / 2; hh = b.height / S / 2; }
+    svg.removeChild(t);
+  } catch (e){ try { svg.removeChild(t); } catch (e2){} }
+  return (_mhCache[key] = {hw, hh});
+}
+// 角标注自动避让：按「文字框四角到最近线段的距离」评分，而不是标签中心
+function placeAngleLabel(v, a, b, r, text, size){
+  const obs = [];
+  for (const id of SEQ){
+    const n = NODES.get(id);
+    if (n.step > curStep) continue;
+    if (n.type === "seg" || n.type === "line") obs.push([n._v.p, n._v.q]);
+    if (n.type === "tick"){                              // 等长刻线也是线，审计会量到
+      const {s, n: cnt, f} = n._v;
+      const dx = s.q.x - s.p.x, dy = s.q.y - s.p.y, len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len, ny = dx / len, half = 0.085;
+      for (let i = 0; i < cnt; i++){
+        const off = (i - (cnt - 1) / 2) * 0.055;
+        const cx = s.p.x + dx * f + (dx / len) * off, cy = s.p.y + dy * f + (dy / len) * off;
+        obs.push([{x: cx - nx * half, y: cy - ny * half}, {x: cx + nx * half, y: cy + ny * half}]);
+      }
+    }
+    if (n.type === "arctick"){                           // 弧上的等角刻线也要避让
+      const {v: V, a: A0, b: B0, r} = n._v;
+      let t0 = Math.atan2(A0.y - V.y, A0.x - V.x), t1 = Math.atan2(B0.y - V.y, B0.x - V.x);
+      let dd = t1 - t0; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI;
+      const tm = t0 + dd / 2;
+      obs.push([{x: V.x + (r - 0.05) * Math.cos(tm), y: V.y + (r - 0.05) * Math.sin(tm)},
+                {x: V.x + (r + 0.05) * Math.cos(tm), y: V.y + (r + 0.05) * Math.sin(tm)}]);
+    }
+  }
+  const {hw, hh} = size || textHalf(text);
+  const a1 = Math.atan2(a.y - v.y, a.x - v.x), a2 = Math.atan2(b.y - v.y, b.x - v.x);
+  let d = a2 - a1; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+  // 自己的角弧单独算：文字框压到弧上时，白色光晕会把弧切断（看着像弧断了）
+  const arcObs = [];
+  for (let i = 0; i < 22; i++){
+    const t0 = a1 + d * i / 22, t1 = a1 + d * (i + 1) / 22;
+    arcObs.push([{x: v.x + r * Math.cos(t0), y: v.y + r * Math.sin(t0)},
+                 {x: v.x + r * Math.cos(t1), y: v.y + r * Math.sin(t1)}]);
+  }
+  const corners = p => [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([ox, oy]) => ({x: p.x + ox * hw, y: p.y + oy * hh}));
+  const gaps = [0.08, 0.12, 0.16];                      // 只贴着弧外侧找，不飞到远处
+  const fs = [0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8, 0.1, 0.9];
+  let best = null, ok = null;
+  for (const gap of gaps){
+    for (const f of fs){
+      const rr = r + gap;
+      if (rr < 0.18) continue;
+      const t = a1 + d * f;
+      const p = {x: v.x + rr * Math.cos(t), y: v.y + rr * Math.sin(t)};
+      const box = {x0: p.x - hw, y0: p.y - hh, x1: p.x + hw, y1: p.y + hh, t: text};
+      if (hitsLabel(box, 0.012)) continue;                 // 不压其它标签
+      let clrLine = 1e9, clrArc = 1e9;
+      const cs = corners(p);
+      for (const c of cs){
+        for (const [s0, s1] of obs) clrLine = Math.min(clrLine, segDistPoint(c, s0, s1));
+        for (const [s0, s1] of arcObs) clrArc = Math.min(clrArc, segDistPoint(c, s0, s1));
+      }
+      const score = Math.min(clrLine, 0.20) - 0.10 * Math.max(0, gap - 0.14);
+      if (!best || score > best.score) best = {p, box, score, clrLine, clrArc};
+      // 合格线：离线段 ≥3px，离自己的弧 ≥3px（否则光晕切弧）
+      if (clrLine >= 0.027 && clrArc >= 0.030 && (!ok || clrLine > ok.clrLine)) ok = {p, box, score, clrLine, clrArc};
+    }
+  }
+  const pick = ok || best;
+  if (!pick){
+    const t = a1 + d * 0.5, rr = r + 0.14;
+    const p = {x: v.x + rr * Math.cos(t), y: v.y + rr * Math.sin(t)};
+    LABEL_BOXES.push({x0: p.x - hw, y0: p.y - hh, x1: p.x + hw, y1: p.y + hh, t: text});
+    return p;
+  }
+  LABEL_BOXES.push(pick.box);                             // 后面画的角标签要避开这个
+  return pick.p;
+}
+function arcPts(v, a, b, r, n){
+  let a1 = Math.atan2(a.y - v.y, a.x - v.x), a2 = Math.atan2(b.y - v.y, b.x - v.x);
+  let d = a2 - a1;
+  while (d > Math.PI) d -= 2 * Math.PI;
+  while (d < -Math.PI) d += 2 * Math.PI;
+  const out = [];
+  for (let i = 0; i <= n; i++){ const t = a1 + d * i / n;
+    out.push([sx(v.x + r * Math.cos(t)), sy(v.y + r * Math.sin(t))]); }
+  return out;
+}
+const fmt = (n, p) => Number(n).toFixed(p);
+
+function drawNode(n){
+  const col = n.color || ink;
+  const w = n.w == null ? 1.2 : n.w;
+  const dash = n.dash ? ` stroke-dasharray="${n.dash}"` : "";
+  switch (n.type){
+    case "poly": {
+      if (n._v.pts.some(p => !isFinite(p.x) || !isFinite(p.y))) return "";
+      const pts = n._v.pts.map(p => `${sx(p.x)},${sy(p.y)}`).join(" ");
+      return `<polygon points="${pts}" style="fill:${n.fill || "rgba(0,0,0,0.05)"};stroke:none"/>`;
+    }
+    case "seg": case "line": {
+      const {p, q} = n._v;
+      if (!isFinite(p.x) || !isFinite(p.y) || !isFinite(q.x) || !isFinite(q.y)) return "";
+      let P0 = p, P1 = q;
+      if (n.type === "line"){ const c = clipLine(p, q); if (!c) return ""; [P0, P1] = c; }
+      return `<line x1="${sx(P0.x)}" y1="${sy(P0.y)}" x2="${sx(P1.x)}" y2="${sy(P1.y)}"
+        style="stroke:${col};stroke-width:${w};stroke-linecap:round"${dash}/>`;
+    }
+    case "cir": {
+      const {c, r} = n._v;
+      if (!isFinite(c.x) || !isFinite(c.y) || !isFinite(r)) return "";
+      return `<circle cx="${sx(c.x)}" cy="${sy(c.y)}" r="${r * S}"
+        style="fill:none;stroke:${col};stroke-width:${w}"${dash}/>`;
+    }
+    case "angle": {
+      const {v, a, b, r, label} = n._v;
+      const pts = arcPts(v, a, b, r, 22).map(p => p[0].toFixed(2) + "," + p[1].toFixed(2)).join(" ");
+      let s = `<polyline points="${pts}" style="fill:none;stroke:${col};stroke-width:1.05;opacity:.9"/>`;
+      if (label && !(n.labelUntil && curStep > n.labelUntil)){
+        const lp = placeAngleLabel(v, a, b, r, label);
+        n._lp = lp;                                      // 供 TikZ 导出复用同一落点
+        s += `<text x="${sx(lp.x)}" y="${sy(lp.y)}"
+          style="fill:${col};stroke:#fff;stroke-width:3.2;paint-order:stroke;stroke-linejoin:round;dominant-baseline:central;font:italic 12.5px 'Times New Roman',Times,serif;text-anchor:middle">${label}</text>`;
+      }
+      return s;
+    }
+    case "arc": {
+      const {v, a, b, r} = n._v;
+      if (!isFinite(r) || !isFinite(v.x)) return "";
+      const pts = arcPts(v, a, b, r, 26).map(p => p[0].toFixed(2) + "," + p[1].toFixed(2)).join(" ");
+      return `<polyline points="${pts}" style="fill:none;stroke:${col};stroke-width:${w}"${dash}/>`;
+    }
+    case "arctick": {
+      const {v, a, b, r} = n._v;
+      let a1 = Math.atan2(a.y - v.y, a.x - v.x), a2 = Math.atan2(b.y - v.y, b.x - v.x);
+      let dd = a2 - a1; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI;
+      const t = a1 + dd / 2, h = 0.05;
+      const q0 = {x: v.x + (r - h) * Math.cos(t), y: v.y + (r - h) * Math.sin(t)};
+      const q1 = {x: v.x + (r + h) * Math.cos(t), y: v.y + (r + h) * Math.sin(t)};
+      return `<line x1="${sx(q0.x)}" y1="${sy(q0.y)}" x2="${sx(q1.x)}" y2="${sy(q1.y)}"
+        style="stroke:${col};stroke-width:1.2"/>`;
+    }
+    case "brace": {
+      const {p, q, side, depth, label} = n._v;
+      if (!isFinite(p.x) || !isFinite(q.x)) return "";
+      const g = braceGeom(p, q, side, depth);
+      const pts = g.pts.map(o => `${sx(o.x).toFixed(2)},${sy(o.y).toFixed(2)}`).join(" ");
+      let s = `<polyline points="${pts}" style="fill:none;stroke:${col};stroke-width:1.05;opacity:.92"/>`;
+      if (label){
+        s += `<text x="${sx(g.labelAt.x)}" y="${sy(g.labelAt.y)}"
+          style="fill:${ink};stroke:#fff;stroke-width:3;paint-order:stroke;dominant-baseline:central;font:italic 11.5px 'Times New Roman',Times,serif;text-anchor:middle">${label}</text>`;
+      }
+      return s;
+    }
+    case "right": {
+      const {v, a, b, size} = n._v;
+      const u1 = Math.atan2(a.y - v.y, a.x - v.x), u2 = Math.atan2(b.y - v.y, b.x - v.x);
+      const p1 = {x: v.x + size * Math.cos(u1), y: v.y + size * Math.sin(u1)};
+      const p2 = {x: v.x + size * Math.cos(u2), y: v.y + size * Math.sin(u2)};
+      const p3 = {x: p1.x + p2.x - v.x, y: p1.y + p2.y - v.y};
+      const pts = [p1, p3, p2].map(p => `${sx(p.x)},${sy(p.y)}`).join(" ");
+      return `<polyline points="${pts}" style="fill:none;stroke:${col};stroke-width:1.05"/>`;
+    }
+    case "tick": {
+      const {s, n: cnt, f} = n._v;
+      const dx = s.q.x - s.p.x, dy = s.q.y - s.p.y, len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len, ny = dx / len, half = 0.085;
+      let out = "";
+      for (let i = 0; i < cnt; i++){
+        const off = (i - (cnt - 1) / 2) * 0.055;
+        const cxp = s.p.x + dx * f + (dx / len) * off, cyp = s.p.y + dy * f + (dy / len) * off;
+        out += `<line x1="${sx(cxp - nx * half)}" y1="${sy(cyp - ny * half)}"
+          x2="${sx(cxp + nx * half)}" y2="${sy(cyp + ny * half)}"
+          style="stroke:${col};stroke-width:1.2"/>`;
+      }
+      return out;
+    }
+    case "point": {
+      const p = n._v, r = n.size === 2 ? 3.6 : 3.2;
+      if (!isFinite(p.x) || !isFinite(p.y)) return "";
+      let s = `<circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="${r}" style="fill:${ink}"/>`;
+      if (n.label){
+        const d = n.dir || [8, -8];
+        s += `<text x="${sx(p.x) + d[0]}" y="${sy(p.y) + d[1]}"
+          style="fill:${ink};stroke:#fff;stroke-width:3.4;paint-order:stroke;stroke-linejoin:round;font:italic 15px 'Times New Roman',Times,serif;text-anchor:middle">${n.label}</text>`;
+      }
+      return s;
+    }
+    case "text": {
+      const t = n._v;
+      return `<text x="${sx(t.x)}" y="${sy(t.y)}" style="fill:${col};font:13px 'PingFang SC',sans-serif">${t.text}</text>`;
+    }
+    default: return "";
+  }
+}
+
+let curStep = 5;
+function render(){
+  rebuild();
+  LABEL_BOXES = [];
+  for (const id of SEQ){
+    const n = NODES.get(id);
+    if (n.step > curStep || n.type !== "point" || !n.label) continue;
+    const p = Pt(id), d = n.dir || [8, -8];
+    LABEL_BOXES.push(labelBox(ux(sx(p.x) + d[0]), uy(sy(p.y) + d[1]), n.label));
+  }
+  const shapes = [];
+  shapes.push(`<rect x="0" y="0" width="${W}" height="${H}" style="fill:#ffffff"/>`);
+  const rest = [];
+  for (const id of SEQ){
+    const n = NODES.get(id);
+    if (n.step > curStep) continue;
+    const html = drawNode(n);
+    if (!html) continue;
+    (n.type === "poly" ? shapes : rest).push(html);
+  }
+  // 拖动手柄永远画在最上层
+  const handles = [];
+  for (const id of SEQ){
+    const n = NODES.get(id);
+    if (n.step > curStep || !n.drag) continue;
+    const p = Pt(id);
+    handles.push(`<circle class="hdl" data-id="${id}" cx="${sx(p.x)}" cy="${sy(p.y)}" r="14"
+      style="fill:rgba(0,0,0,0);cursor:grab"/>`);
+  }
+  svg.innerHTML = shapes.concat(rest, handles).join("");
+  bindDrag();
+  updatePanel();
+}
+
+/* ---------- 拖动 ---------- */
+function toSvg(ev){
+  const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY;
+  return p.matrixTransform(svg.getScreenCTM().inverse());
+}
+let dragId = null;
+function bindDrag(){
+  // 事件委托挂在 svg + window 上：render() 每次重建 innerHTML，手柄元素会被换掉，
+  // 绑在旧元素上的 pointermove 和 setPointerCapture 都会失效（拖一下就断）。
+  if (bindDrag._bound) return;
+  bindDrag._bound = true;
+  svg.addEventListener("pointerdown", ev => {
+    const h = ev.target.closest && ev.target.closest(".hdl");
+    if (!h) return;
+    ev.preventDefault();
+    dragId = h.dataset.id;
+    h.style.cursor = "grabbing";
+    const pb = document.getElementById("play");
+    if (pb) pb.textContent = "▶ 播放";
+    if (typeof playing !== "undefined") playing = false;
+    window.addEventListener("pointermove", onDragMove);
+    window.addEventListener("pointerup", onDragUp, {once: true});
+    window.addEventListener("pointercancel", onDragUp, {once: true});
+  });
+}
+function onDragMove(ev){
+  if (!dragId) return;
+  const n = NODES.get(dragId);
+  if (!n) return;
+  const sp = toSvg(ev);
+  if (n.drag === "free"){
+    let X = ux(sp.x), Y = uy(sp.y);
+    if (snapEnabled()){
+      const s = snapPoint(dragId, X, Y);
+      if (s){ X = s.x; Y = s.y; }
+    }
+    n.par.x = X; n.par.y = Y;
+  } else if (n.drag === "seg"){
+    const A = Pt(n.a), B = Pt(n.b);
+    const dx = B.x - A.x, dy = B.y - A.y, L2 = dx * dx + dy * dy || 1;
+    let t = ((ux(sp.x) - A.x) * dx + (uy(sp.y) - A.y) * dy) / L2;
+    n.par.s = Math.min(0.97, Math.max(0.03, t));
+  } else if (n.drag === "line"){
+    const LN = val(n.lineId);                       // 无限直线上的一维点：不夹紧
+    const dx = LN.q.x - LN.p.x, dy = LN.q.y - LN.p.y, L2 = dx * dx + dy * dy || 1;
+    n.par.t = ((ux(sp.x) - LN.p.x) * dx + (uy(sp.y) - LN.p.y) * dy) / L2;
+  }
+  render();
+  syncSliders();
+  ev.preventDefault();
+}
+function onDragUp(){
+  dragId = null;
+  window.removeEventListener("pointermove", onDragMove);
+}
+
+/* ---------- 拖动吸附 ---------- */
+function snapEnabled(){ const el = document.getElementById("snap"); return !el || el.checked; }
+function snapPoint(id, x, y){
+  let best = null;
+  for (const sid of SEQ){
+    const n = NODES.get(sid);
+    if (n.step > curStep) continue;
+    if ((n.type === "seg" || n.type === "line") && n._v.a !== id && n._v.b !== id){
+      const p = n._v.p, q = n._v.q;
+      const dx = q.x - p.x, dy = q.y - p.y, L2 = dx * dx + dy * dy || 1e-12;
+      let t = ((x - p.x) * dx + (y - p.y) * dy) / L2;
+      if (n.type === "seg") t = Math.max(0, Math.min(1, t));
+      const px = p.x + dx * t, py = p.y + dy * t;
+      const d = Math.hypot(x - px, y - py);
+      if (!best || d < best.d) best = {d, x: px, y: py};
+    } else if (n.type === "cir"){
+      const {c, r} = n._v;
+      const d0 = Math.hypot(x - c.x, y - c.y) || 1e-9;
+      const px = c.x + (x - c.x) / d0 * r, py = c.y + (y - c.y) / d0 * r;
+      const d = Math.abs(d0 - r);
+      if (!best || d < best.d) best = {d, x: px, y: py};
+    }
+  }
+  return best && best.d < 0.09 ? best : null;          // 吸附半径 ≈ 10px
+}
+
+/* ---------- 面板 ---------- */
+const NOTE = {
+  1: "原题：AB=AC，∠BAC=α；把 CA 绕 C <em>逆时针</em> 转 90°−α 得 CD（于是 CD=CA）；CD 交 AB 于 E，射线 AD 与 CB 延长线交于 F。",
+  2: "△ABC 等腰 ⟹ ∠ACB = (180°−α)/2 = <em>90°−α/2</em>；B、C、F 共线，故 ∠ACF 也是 90°−α/2。",
+  3: "△ACD 中 CA=CD、∠ACD=90°−α ⟹ ∠CAD=(180°−(90°−α))/2 = <em>45°+α/2</em>；A、D、F 共线 ⟹ ∠CAF=45°+α/2。",
+  4: "△ACF 内角和：∠AFC = 180° − (45°+α/2) − (90°−α/2) = <em>45°</em>。α 被消掉了，与 α 无关。",
+  5: "拉滑杆：α 从 3° 到 88°，右侧 ∠AFC 始终 45.0000°。α→90° 时 ∠BAF→0、B 与 F 重合，图形退化——这正是题设 α&lt;90° 的来由。"
+};
+function updatePanel(){
+  const box = document.getElementById("checks");
+  let html = "";
+  for (const c of CHECKS){
+    const r = c.f(), ok = r < c.tol;
+    const shown = r < 1e-12 ? "0" : (c.unit === "°" ? fmt(r, 6) : r.toExponential(2));
+    html += `<div class="row"><span>${c.name}</span>
+      <b class="${ok ? "ok" : "bad"}">${ok ? "✓" : "✗"} ${shown}${c.unit === "°" ? "°" : ""}</b></div>`;
+  }
+  // 补充：当前几何量（数据驱动，换图只改 EXTRA，别把对象名写死在 updatePanel 里）
+  html += `<div class="row" style="margin-top:6px;border-top:1px dashed var(--line);padding-top:6px"></div>`;
+  for (const ex of EXTRA){
+    let v = "—";
+    try { v = fmt(ex.f(), ex.dec == null ? 4 : ex.dec); } catch(e){ v = "—"; }
+    html += `<div class="row"><span style="color:var(--muted)">${ex.label}</span><b>${v}${ex.unit || ""}</b></div>`;
+  }
+  box.innerHTML = html;
+  document.getElementById("note").innerHTML = NOTE[curStep] || "";
+  const sTxt = [];
+  for (const id of SEQ){
+    const n = NODES.get(id);
+    if (n.doc) sTxt.push(n.doc);
+  }
+  document.getElementById("struct").textContent = sTxt.join("\n");
+}
+
+/* ---------- 分步 ---------- */
+const stepsBar = document.getElementById("steps");
+for (let i = 1; i <= 5; i++){
+  const b = document.createElement("button");
+  b.textContent = "①②③④⑤"[i - 1];
+  b.dataset.step = i;
+  b.onclick = () => { curStep = i; markStep(); render(); };
+  stepsBar.appendChild(b);
+}
+function markStep(){
+  stepsBar.querySelectorAll("button").forEach(b => b.classList.toggle("on", +b.dataset.step === curStep));
+}
+
+/* ---------- 滑杆（数据驱动：只写「驱动哪个节点的哪个参数」） ---------- */
+const SLIDERS = [
+  {id: "sa", target: "alp", key: "deg", min: 3, max: 88, step: 0.5, dec: 1, label: "α（∠BAC）"}
+];
+const sliderCtl = {};
+function buildSliders(){
+  const box = document.getElementById("sliders");
+  for (const sp of SLIDERS){
+    const wrap = document.createElement("div");
+    const inp = document.createElement("input");
+    inp.className = "slider"; inp.type = "range";
+    inp.min = sp.min; inp.max = sp.max; inp.step = sp.step;
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<span>${sp.label}</span><b></b>`;
+    wrap.appendChild(inp); wrap.appendChild(row);
+    box.appendChild(wrap);
+    const out = row.querySelector("b");
+    const show = () => {
+      inp.value = NODES.get(sp.target).par[sp.key];
+      out.textContent = Number(inp.value).toFixed(sp.dec);
+    };
+    inp.oninput = () => {
+      NODES.get(sp.target).par[sp.key] = Number(inp.value);
+      out.textContent = Number(inp.value).toFixed(sp.dec);
+      render();
+    };
+    sliderCtl[sp.id] = {sp, inp, out, show};
+    show();
+  }
+}
+function syncSliders(){ for (const k in sliderCtl) sliderCtl[k].show(); }
+buildSliders();
+
+const INIT_PAR = {};
+for (const id of SEQ){ const n = NODES.get(id); if (n.par) INIT_PAR[id] = JSON.parse(JSON.stringify(n.par)); }
+
+let playing = false, raf = 0, dirn = 1;
+const playBtn = document.getElementById("play");
+const PLAY = SLIDERS[0];
+playBtn.onclick = () => {
+  playing = !playing;
+  playBtn.textContent = playing ? "❚❚ 暂停" : "▶ 播放";
+  if (!playing) cancelAnimationFrame(raf);
+  else tick();
+};
+function tick(){
+  raf = requestAnimationFrame(() => {
+    if (!playing) return;
+    const n = NODES.get(PLAY.target);
+    const range = PLAY.max - PLAY.min;
+    n.par[PLAY.key] += range * 0.0022 * dirn;
+    const lo = PLAY.min + range * 0.05, hi = PLAY.max - range * 0.05;
+    if (n.par[PLAY.key] > hi){ n.par[PLAY.key] = hi; dirn = -1; }
+    if (n.par[PLAY.key] < lo){ n.par[PLAY.key] = lo; dirn = 1; }
+    syncSliders();
+    render();
+    tick();
+  });
+}
+document.getElementById("reset").onclick = () => {
+  for (const id in INIT_PAR){
+    const n = NODES.get(id);
+    if (!n.par) continue;
+    for (const k in INIT_PAR[id]) n.par[k] = INIT_PAR[id][k];
+  }
+  curStep = 5; markStep(); syncSliders(); render();
+};
+
+/* ---------- 导出 ---------- */
+const dump = document.getElementById("dump");
+function showDump(txt){ dump.style.display = "block"; dump.textContent = txt;
+  dump.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(txt); }; }
+document.getElementById("btn-tikz").onclick = () => showDump(toTikz());
+document.getElementById("btn-json").onclick = () => showDump(toProject());
+document.getElementById("btn-png").onclick = () => exportPng();
+document.getElementById("btn-svg").onclick = () => exportSvg();
+document.getElementById("btn-load").onclick = () => document.getElementById("file").click();
+document.getElementById("file").onchange = importProjectFile;
+
+function tikzHex(c){
+  if (!c) return null;
+  const m = /#([0-9a-fA-F]{6})/.exec(String(c));
+  return m ? m[1].toLowerCase() : null;
+}
+function toTikz(){
+  const defs = new Map();
+  const cname = hex => {
+    if (!hex) return "black";
+    if (!defs.has(hex)) defs.set(hex, "gc" + (defs.size + 1));
+    return defs.get(hex);
+  };
+  const body = [];
+  const co = (x, y) => `(${fmt(x, 3)},${fmt(y, 3)})`;
+  const N = id => Pt(id);
+  /* 点与字母：按 dir 给 8 向 anchor，别一律 below */
+  for (const id of SEQ){
+    const n = NODES.get(id);
+    if (n.step > curStep || n.type !== "point" || !n._v) continue;
+    const p = N(id);
+    body.push(`\\coordinate (${id}) at ${co(p.x, p.y)};`);
+    if (n.label){
+      const d = n.dir || [8, -8];
+      const ax = Math.abs(d[0]), ay = Math.abs(d[1]);
+      const vA = d[1] < 0 ? "south" : "north";
+      const hA = ax > 0.45 * ay ? (d[0] < 0 ? " east" : " west") : "";
+      body.push(`\\node[anchor=${vA}${hA},inner sep=1.5pt] at (${id}) {$${n.label}$};`);
+    }
+  }
+  /* 形状按定义顺序画：填充 → 线 → 刻线 → 角 */
+  for (const id of SEQ){
+    const n = NODES.get(id);
+    if (n.step > curStep) continue;
+    if (n.type === "poly" && n._v){
+      const m = /rgba?\(([^)]+)\)/.exec(n.fill || "");
+      let opt = "fill=black,fill opacity=0.07";
+      if (m){
+        const q = m[1].split(",").map(Number);
+        const hex = [q[0], q[1], q[2]].map(x => Math.round(x).toString(16).padStart(2, "0")).join("");
+        opt = `fill=${cname(hex)},fill opacity=${fmt(q[3] == null ? 1 : q[3], 3)}`;
+      }
+      body.push(`\\fill[${opt}] (${n._v.ids.join(") -- (")}) -- cycle;`);
+    }
+    if ((n.type === "seg" || n.type === "line") && n._v){
+      const {p, q} = n._v;
+      let P0 = p, P1 = q;
+      if (n.type === "line"){ const c = clipLine(p, q); if (!c) continue; [P0, P1] = c; }
+      const st = [n.dash ? "dashed" : "", `line width=${fmt((n.w || 1.2) * 0.6, 2)}pt`,
+                  `draw=${cname(tikzHex(n.color))}`].filter(Boolean).join(",");
+      body.push(`\\draw[${st}] ${co(P0.x, P0.y)} -- ${co(P1.x, P1.y)};`);
+    }
+    if (n.type === "cir" && n._v)
+      body.push(`\\draw[draw=${cname(tikzHex(n.color))}] ${co(n._v.c.x, n._v.c.y)} circle (${fmt(n._v.r, 3)});`);
+    if (n.type === "right" && n._v){
+      const {v, a, b, size} = n._v;
+      const u1 = Math.atan2(a.y - v.y, a.x - v.x), u2 = Math.atan2(b.y - v.y, b.x - v.x);
+      const p1 = {x: v.x + size * Math.cos(u1), y: v.y + size * Math.sin(u1)};
+      const p2 = {x: v.x + size * Math.cos(u2), y: v.y + size * Math.sin(u2)};
+      const p3 = {x: p1.x + p2.x - v.x, y: p1.y + p2.y - v.y};
+      body.push(`\\draw[draw=${cname(tikzHex(n.color))}] ${co(p1.x, p1.y)} -- ${co(p3.x, p3.y)} -- ${co(p2.x, p2.y)};`);
+    }
+    if (n.type === "tick" && n._v){                      // 等长刻线（原来漏导）
+      const {s, n: cnt, f} = n._v;
+      const dx = s.q.x - s.p.x, dy = s.q.y - s.p.y, len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len, ny = dx / len, half = 0.085;
+      for (let i = 0; i < cnt; i++){
+        const off = (i - (cnt - 1) / 2) * 0.055;
+        const cx = s.p.x + dx * f + (dx / len) * off, cy = s.p.y + dy * f + (dy / len) * off;
+        body.push(`\\draw[line width=0.72pt,draw=${cname(tikzHex(n.color))}] ${co(cx - nx * half, cy - ny * half)} -- ${co(cx + nx * half, cy + ny * half)};`);
+      }
+    }
+    if (n.type === "arctick" && n._v){                   // 弧上等角刻线
+      const {v, a, b, r} = n._v;
+      let a1 = Math.atan2(a.y - v.y, a.x - v.x), a2 = Math.atan2(b.y - v.y, b.x - v.x);
+      let dd = a2 - a1; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI;
+      const t = a1 + dd / 2, h = 0.05;
+      body.push(`\\draw[line width=0.72pt,draw=${cname(tikzHex(n.color))}] ${co(v.x + (r - h) * Math.cos(t), v.y + (r - h) * Math.sin(t))} -- ${co(v.x + (r + h) * Math.cos(t), v.y + (r + h) * Math.sin(t))};`);
+    }
+    if (n.type === "brace" && n._v){                     // 大括号标注
+      const g = braceGeom(n._v.p, n._v.q, n._v.side, n._v.depth);
+      body.push(`\\draw[draw=${cname(tikzHex(n.color))}] ${g.pts.map(o => co(o.x, o.y)).join(" -- ")};`);
+      if (n._v.label) body.push(`\\node[inner sep=1pt] at ${co(g.labelAt.x, g.labelAt.y)} {$${n._v.label}$};`);
+    }
+    if (n.type === "arc" && n._v){                       // 作图弧（劣弧）
+      const {v, a, b, r} = n._v;
+      let a1 = Math.atan2(a.y - v.y, a.x - v.x), a2 = Math.atan2(b.y - v.y, b.x - v.x);
+      let dd = a2 - a1; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI;
+      const A1 = a1 / SQ, A2 = (a1 + dd) / SQ;
+      body.push(`\\draw[draw=${cname(tikzHex(n.color))}] ${co(v.x, v.y)} +(${fmt(A1, 1)}:${fmt(r, 3)}) arc (${fmt(A1, 1)}:${fmt(A2, 1)}:${fmt(r, 3)});`);
+    }
+    if (n.type === "angle" && n._v){
+      const {v, a, b, r, label} = n._v;
+      let a1 = Math.atan2(a.y - v.y, a.x - v.x), a2 = Math.atan2(b.y - v.y, b.x - v.x);
+      let dd = a2 - a1; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI;
+      const A1 = a1 / SQ, A2 = (a1 + dd) / SQ;
+      body.push(`\\draw[draw=${cname(tikzHex(n.color))}] ${co(v.x, v.y)} +(${fmt(A1, 1)}:${fmt(r, 3)}) arc (${fmt(A1, 1)}:${fmt(A2, 1)}:${fmt(r, 3)});`);
+      if (label && !(n.labelUntil && curStep > n.labelUntil)){
+        const txt = String(label).replace("°", "^{\\circ}");
+        // 用 LaTeX \tiny 的实际字框（0.208×0.096 单位）重新搜一次位置，网页的落点不适用
+        const lp = placeAngleLabel(v, a, b, r, label, {hw: 0.104, hh: 0.048});
+        body.push(`\\node[inner sep=1pt,font=\\tiny] at ${co(lp.x, lp.y)} {$${txt}$};`);
+      }
+    }
+  }
+  const head = ["% 由「约束引擎」直接导出（1 单位 = 1cm）"];
+  for (const [hex, name] of defs) head.push(`\\definecolor{${name}}{HTML}{${hex.toUpperCase()}}`);
+  return [...head,
+    "\\begin{tikzpicture}[line cap=round,line join=round,x=2.2cm,y=2.2cm,every node/.style={font=\\scriptsize}]",
+    ...body, "\\end{tikzpicture}"].join("\n");
+}
+function toProject(){
+  // 结构与拖动状态分开存：defs 只有构造，vars 只有参数（对应 .algeo 的 definitions / uvarMap）
+  const defs = [], vars = {};
+  for (const id of SEQ){
+    const n = NODES.get(id);
+    defs.push({id, type: n.type, step: n.step, parents: n.parents || [],
+      label: n.label, dir: n.dir, doc: n.doc});
+    if (n.par) vars[id] = JSON.parse(JSON.stringify(n.par));
+  }
+  return JSON.stringify({
+    format: "constraint-geometry/2",
+    view: {scale: S, cx: CX, cy: CY, width: W, height: H, units: "px"},
+    vars, defs
+  }, null, 1);
+}
+function exportPng(){
+  const side = 2;
+  const clone = svg.cloneNode(true);
+  clone.setAttribute("width", W); clone.setAttribute("height", H);
+  clone.querySelectorAll(".hdl").forEach(h => h.remove());
+  const src = new XMLSerializer().serializeToString(clone);
+  const img = new Image();
+  img.onload = () => {
+    const cv = document.createElement("canvas");
+    cv.width = W * side; cv.height = H * side;
+    const ctx = cv.getContext("2d");
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.setTransform(side, 0, 0, side, 0, 0);
+    ctx.drawImage(img, 0, 0, W, H);
+    const url = cv.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = url; a.download = "手拉手-45度.png"; a.click();
+    showDump("PNG 已生成（2×）→ 若浏览器拦截下载，可在控制台复制 dataURL。");
+  };
+  img.onerror = () => showDump("PNG 导出失败：当前环境阻止了 SVG 栅格化。");
+  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src);
+}
+/* ---------- 矢量 SVG / 工程载入 ---------- */
+function downloadText(text, name, mime){
+  const blob = new Blob([text], {type: mime || "text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+function svgSource(){
+  const ns = "http://www.w3.org/2000/svg";
+  const clone = svg.cloneNode(true);
+  clone.querySelectorAll(".hdl").forEach(h => h.remove());
+  const bg = document.createElementNS(ns, "rect");
+  bg.setAttribute("x", 0); bg.setAttribute("y", 0);
+  bg.setAttribute("width", W); bg.setAttribute("height", H);
+  bg.setAttribute("fill", "#ffffff");
+  clone.insertBefore(bg, clone.firstChild);
+  clone.setAttribute("xmlns", ns);
+  clone.setAttribute("width", W); clone.setAttribute("height", H);
+  return '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
+}
+function exportSvg(){
+  downloadText(svgSource(), "手拉手-45度.svg", "image/svg+xml;charset=utf-8");
+  showDump("SVG 已导出：矢量，可直接拖进 WPS / Word，或 \\includegraphics 进 LaTeX。");
+}
+function applyProject(obj){
+  if (!obj || !Array.isArray(obj.defs)) throw new Error("不是 constraint-geometry 工程文件");
+  const vars = obj.vars || {};
+  let applied = 0, skipped = 0, unknown = 0;
+  for (const d of obj.defs){
+    const node = NODES.get(d.id);
+    if (!node){ unknown++; continue; }
+    const v = vars[d.id];
+    if (!v || !node.par){ skipped++; continue; }
+    for (const k in v) if (k in node.par){ node.par[k] = v[k]; applied++; }
+  }
+  syncSliders(); render();
+  return {applied, skipped, unknown};
+}
+function importProjectFile(ev){
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const r = applyProject(JSON.parse(String(rd.result)));
+      showDump("已载入 " + f.name + "：恢复 " + r.applied + " 个参数" +
+               (r.skipped ? "，" + r.skipped + " 个对象无参数" : "") +
+               (r.unknown ? "，" + r.unknown + " 个对象不在本图定义里" : ""));
+    } catch (e){ showDump("载入失败：" + e.message); }
+  };
+  rd.readAsText(f);
+  ev.target.value = "";
+}
+
+svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+markStep();
+render();
+</script>
+</body>
+</html>

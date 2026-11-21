@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>（2）DF = √2·EH：GH = ½BF（全等 + 斜边中线）</title>
+<title>27(2) GH = ½BF（学生版）</title>
 <style>
   :root{
     --ink: var(--foreground, #1d1f24);
@@ -44,56 +44,101 @@
   .hint{font-size:11.5px;color:var(--muted);margin-top:6px}
   @media (max-width:760px){ .app{flex-direction:column} aside{flex:1 1 auto;max-width:none;width:100%} }
 </style>
+
+<style>
+  body{padding:0}
+  .wrap{max-width:940px;margin:0 auto;padding:14px 14px 40px}
+  .head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:2px 0 10px}
+  .ttl{font-size:17px;font-weight:700;letter-spacing:.2px}
+  .src{font-size:12px;color:var(--muted,#6b7280)}
+  .stage{border:1px solid var(--line,#e3e5e9);border-radius:14px;background:#fff;overflow:hidden;position:relative}
+  .stage svg{display:block;width:100%;height:auto}
+  .status{position:absolute;left:12px;bottom:10px;font:600 12.5px/1 -apple-system,sans-serif;
+    color:var(--muted,#6b7280);background:rgba(255,255,255,.86);padding:6px 9px;border-radius:8px}
+  .status.ok{color:#2f9e63}
+  .ctl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 2px 4px;font-size:13px}
+  .ctl .sl{flex:1 1 240px;min-width:200px}
+  .ctl input[type=range]{width:100%}
+  .hint{font-size:12.5px;color:var(--muted,#6b7280)}
+  details.card{border:1px solid var(--line,#e3e5e9);border-radius:12px;background:#fff;margin:10px 0;padding:0}
+  details.card>summary{cursor:pointer;padding:11px 14px;font-size:14px;font-weight:650;list-style:none}
+  details.card>summary::-webkit-details-marker{display:none}
+  details.card>summary:before{content:"▸";display:inline-block;width:14px;color:var(--muted,#9aa0a6)}
+  details.card[open]>summary:before{content:"▾"}
+  details.card>summary b{color:var(--blue,#2f6fed);margin-right:4px}
+  details.card .body{padding:0 14px 13px;font-size:13.5px;line-height:1.85}
+  .body p{margin:7px 0}
+  .body .step{margin:8px 0;padding-left:2px}
+  .body .why{background:rgba(47,111,237,.06);border-left:3px solid var(--blue,#2f6fed);
+    padding:8px 11px;border-radius:0 8px 8px 0;margin:10px 0}
+  .body em{font-style:normal;color:#e8833a;font-weight:650}
+  .body .mq{font-family:"Times New Roman",Times,serif;font-style:italic}
+  .hidden{display:none}
+</style>
 </head>
 <body>
-<div class="app">
-  <div class="stage">
-    <svg id="svg" viewBox="0 0 420 308" xmlns="http://www.w3.org/2000/svg"></svg>
+
+<div class="wrap">
+  <div class="head">
+    <div class="ttl">27 题（2）· GH 与 BF 有什么关系时 DF = √2·EH</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题</div>
   </div>
 
-  <aside>
-    <h1>27(2) GH 与 BF 什么关系时 DF = √2·EH</h1>
-    <p class="sub">2026 北京中学 初三（上）期中 27 题 ｜ 拖 H 追上空心圈 BC 中点，两个等式同时成立。</p>
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 420 308" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="status" id="status"></div>
+  </div>
 
-    <div class="card">
-      <h2>分步推演</h2>
-      <div class="steps" id="steps"></div>
-      <div class="note" id="note"></div>
-    </div>
+  <div class="ctl">
+    <div class="hint">拖动图上的 <b>H</b>（橙色段 GH 的端点），让它追上空心圈</div>
+  </div>
 
-    <div class="card">
-      <h2>结构自检（实时）</h2>
-      <div id="checks"></div>
-      <div class="hint">全部由构造保证，随拖动重算，残差 ≈ 0。</div>
-    </div>
+  <details class="card" open>
+    <summary><b>①</b> 关键辅助线：为什么这样作</summary>
+    <div class="body"><p>看到三样东西，就该想到三条固定的路子：</p>
+<div class="why"><b>① 见 45° 想到 √2</b>　含 45° 的直角三角形里，斜边 = √2 × 直角边。<br>
+所以要把 DF 放进一个 45° 的直角三角形：<em>过 D 作 DK ⊥ CF</em>，则 Rt△DKF 中 ∠DFK=45°，得 DF=√2·DK。</div>
+<div class="why"><b>② 见中点想到斜边中线</b>　先证 E 是 C 到 AB 的垂足（∠AEC=90°），再取 BC 中点 M，直角三角形斜边中线 <em>EM=½BC</em>。</div>
+<div class="why"><b>③ 两条要接上，缺一座桥</b>　需要 DK=½BC，而这正是 <em>△DKC ≌ △BMA</em>：直角、α/2、CD=AB，AAS 刚好齐。</div>
+<p>G 是 CF 中点，作用只是"翻译"：GH=½BF ⟺ CH=½CB ⟺ H 是 BC 中点（中位线反过来用）。</p>
+<p class="hint">图上：空心圈 = BC 中点 M；紫线 EH、DK 是临时辅助线；橙段 GH 与绿段 BF 就是要比的两段。</p></div>
+  </details>
+  <details class="card">
+    <summary><b>②</b> 规范解答</summary>
+    <div class="body"><div class="step">① 证 AB⊥CD：∠ACE=∠ACD=90°−α，∠CAE=α，∴ ∠AEC=90°，即 AB⊥CD，E 为 C 到 AB 的垂足。</div>
+<div class="step">② 取 BC 中点 M．在 Rt△BEC 中，EM 是斜边中线，∴ <span class="mq">EM=½BC</span>；<br>
+又 AB=AC，∴ AM⊥BC，∠BAM=α/2．</div>
+<div class="step">③ 作 DK⊥CF 于 K（∠DCF=α/2、∠DFC=45° 都是锐角，垂足 K 落在线段 CF 上）．<br>
+∵ ∠DCK=∠ACF−∠ACD=α/2=∠BAM，∠DKC=∠BMA=90°，CD=AB，<br>
+∴ △DKC≌△BMA(AAS)，∴ <span class="mq">DK=BM=½BC</span>．<br>
+在 Rt△DKF 中 ∠DFK=45°，∴ <span class="mq">DF=√2·DK=√2·½BC=√2·EM</span>．</div>
+<div class="step">④ 反过来：若 DF=√2·EH，则 EH=½BC=EM；又 G 为 CF 中点，<br>
+CH=½CB ⟺ GH=CG−CH=½CF−½CB=½BF．<br>
+∴ H 与 M 重合，即 <span class="mq">GH=½BF</span>．</div>
+<div class="why">结论：当 <em>GH = ½BF</em>（即 H 为 BC 中点）时，DF = √2·EH．</div></div>
+  </details>
+  <details class="card">
+    <summary><b>③</b> 易错点</summary>
+    <div class="body"><p>· 只证"当 H 在中点时成立"，没交代"只有这个位置"——探究题两问都要答。</p>
+<p>· 全等的对应关系写错：DK 对 BM（都对着 α/2 的邻边），不是对 AM。</p>
+<p>· 求 DF 用的是 ∠DFK=45°，别误用 ∠DFC=135°。</p>
+<p>· 漏说垂足 K 在线段 CF 上（要靠 ∠DCF、∠DFC 都是锐角来说明）。</p></div>
+  </details>
+  <details class="card">
+    <summary>自检（老师用，学生不用看）</summary>
+    <div class="body"><div id="checks"></div>
+      <div class="hint">残差随拖动实时重算，全为 0 说明图与结论一致。</div></div>
+  </details>
 
-    <div class="card">
-      <h2>动点 / 播放</h2>
-      <div id="sliders"></div>
-      <div style="margin-top:7px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button id="play">▶ 播放</button>
-        <button class="ghost" id="reset">复位</button>
-        <button class="ghost" id="gotoH">H → BC 中点</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>结构化对象</h2>
-      <details>
-        <summary>展开：本图全部定义（可复现）</summary>
-        <pre id="struct"></pre>
-      </details>
-      <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">
-        <button class="ghost" id="btn-tikz">导出 TikZ</button>
-        <button class="ghost" id="btn-json">导出工程 JSON</button>
-        <button class="ghost" id="btn-png">导出 PNG</button>
-        <button class="ghost" id="btn-svg">导出 SVG</button>
-        <button class="ghost" id="btn-load">载入工程</button>
-        <input type="file" id="file" accept=".json,.algeo" style="display:none">
-      </div>
-      <pre id="dump" style="margin-top:7px;display:none"></pre>
-    </div>
-  </aside>
+  <div class="hidden">
+    <div id="sliders"></div><div id="steps"></div><div id="note"></div>
+    <button id="play"></button><button id="reset"></button>
+    <input type="checkbox" id="snap" checked>
+    <pre id="struct"></pre><pre id="dump"></pre>
+    <button id="btn-tikz"></button><button id="btn-json"></button>
+    <button id="btn-png"></button><button id="btn-svg"></button>
+    <button id="btn-load"></button><input type="file" id="file">
+  </div>
 </div>
 
 <script>
@@ -399,7 +444,7 @@ angleNode("aC", "C", "A", "D", 0.74, "90°−α", {step: 3, color: "var(--orange
 angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 3, color: "var(--green,#2f9e63)"});
 
 /* ---- G：CF 中点；H：CG 上动点 ---- */
-midPoint("G", "C", "F", {label: "G", dir: [-5, -24], size: 1, step: 3,
+midPoint("G", "C", "F", {label: "G", dir: [12, -12], size: 1, step: 3,
   doc: "G := MidPoint(C, F)"});
 onSeg("H", "C", "G", 0.35, {label: "H", dir: [18, -18], size: 1, step: 3,
   doc: "H := PointOnSegment(C, G, s)   -- 可拖，也可用滑杆"});
@@ -859,10 +904,7 @@ function markStep(){
 }
 
 /* ---------- 滑杆（数据驱动：只写「驱动哪个节点的哪个参数」） ---------- */
-const SLIDERS = [
-  {id: "sa", target: "alp", key: "deg", min: 15, max: 85, step: 0.5, dec: 1, label: "α（∠BAC）"},
-  {id: "sh", target: "H", key: "s", min: 0.03, max: 0.97, step: 0.002, dec: 3, label: "H 在 CG 上的位置 CH/CG"}
-];
+const SLIDERS = []
 const sliderCtl = {};
 function buildSliders(){
   const box = document.getElementById("sliders");
@@ -892,18 +934,6 @@ function buildSliders(){
 }
 function syncSliders(){ for (const k in sliderCtl) sliderCtl[k].show(); }
 buildSliders();
-
-/* 一键把 H 放到 BC 中点（CH = ½CB） */
-(function(){
-  const b = document.getElementById("gotoH");
-  if (!b) return;
-  b.onclick = () => {
-    HLock = true;
-    NODES.get("H").par.s = dist(Pt("C"), Pt("B")) / dist(Pt("C"), Pt("F"));
-    NODES.get("H").par.s = Math.min(0.97, Math.max(0.03, NODES.get("H").par.s));
-    syncSliders(); render();
-  };
-})();
 
 const INIT_PAR = {};
 for (const id of SEQ){ const n = NODES.get(id); if (n.par) INIT_PAR[id] = JSON.parse(JSON.stringify(n.par)); }
@@ -1156,28 +1186,28 @@ function importProjectFile(ev){
 svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 markStep();
 render();
-/* H 粘住 BC 中点：α 变化时若 H 没被手动动过，就自动跟随，保证面板始终自洽 */
-let HLock = true;
-function snapH(){
-  const n = NODES.get("H");
-  n.par.s = Math.min(0.97, Math.max(0.03, dist(Pt("C"), Pt("B")) / dist(Pt("C"), Pt("F"))));
-}
-snapH();
-if (INIT_PAR["H"]) INIT_PAR["H"].s = NODES.get("H").par.s;
-syncSliders();
+NODES.get("H").par.s = 0.42;
+
+/* ---------- 状态条：H 追到 BC 中点时点亮 ---------- */
+const _T = Math.tan;
+const origRender2 = render;
+render = function(){
+  origRender2();
+  const el = document.getElementById("status");
+  if (!el) return;
+  const gh = dist(Pt("G"), Pt("H")), hb = dist(Pt("B"), Pt("F")) / 2;
+  const okH = Math.abs(gh - hb) < 0.003;
+  if (okH){
+    el.textContent = "✓ GH = ½BF　此时 DF = √2·EH";
+    el.classList.add("ok");
+  } else {
+    el.textContent = "把 H 拖到空心圈（BC 中点）试试";
+    el.classList.remove("ok");
+  }
+};
+
 render();
-{
-  const _sa = sliderCtl["sa"].inp, _saOrig = _sa.oninput;
-  _sa.oninput = () => { _saOrig(); if (HLock){ snapH(); syncSliders(); render(); } };
-  const _sh = sliderCtl["sh"].inp, _shOrig = _sh.oninput;
-  _sh.oninput = () => { HLock = false; _shOrig(); };
-  svg.addEventListener("pointerdown", ev => {
-    const h = ev.target.closest && ev.target.closest(".hdl");
-    if (h && h.dataset.id === "H") HLock = false;
-  });
-  const _rst = document.getElementById("reset"), _rstOrig = _rst.onclick;
-  _rst.onclick = () => { HLock = true; _rstOrig(); };
-}
+svg.setAttribute('viewBox', '24 27 325 268');
 </script>
 </body>
 </html>
