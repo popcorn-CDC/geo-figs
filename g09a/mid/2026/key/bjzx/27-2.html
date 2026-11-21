@@ -810,6 +810,7 @@ function bindDrag(){
     if (pb) pb.textContent = "▶ 播放";
     if (typeof playing !== "undefined") playing = false;
     window.addEventListener("pointermove", onDragMove);
+    svg.addEventListener("pointermove", onDragMove);   // 兜底：个别环境 window 上收不到
     window.addEventListener("pointerup", onDragUp, {once: true});
     window.addEventListener("pointercancel", onDragUp, {once: true});
   });
@@ -843,6 +844,7 @@ function onDragMove(ev){
 function onDragUp(){
   dragId = null;
   window.removeEventListener("pointermove", onDragMove);
+  svg.removeEventListener("pointermove", onDragMove);
 }
 
 /* ---------- 拖动吸附 ---------- */
@@ -1201,34 +1203,34 @@ function importProjectFile(ev){
 svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 markStep();
 render();
+function snapH(){
+  const n = NODES.get("H");
+  const sEx = dist(Pt("C"), Pt("B")) / dist(Pt("C"), Pt("F"));
+  if (Math.abs(n.par.s - sEx) < 0.012) n.par.s = sEx;
+}
 NODES.get("H").par.s = 0.42;
 const _hr = document.getElementById("hRange");
 _hr.value = NODES.get("H").par.s;
-_hr.addEventListener("input", ev=>{ NODES.get("H").par.s = +ev.target.value; render(); });
+_hr.addEventListener("input", ev=>{ NODES.get("H").par.s = +ev.target.value; snapH(); render(); });
+window.addEventListener("pointerup", ()=>{ snapH(); render(); });
 
-const origRender2 = render;
-render = function(){
-  /* 磁吸：H 靠近 BC 中点就自动吸附，让学生/滑杆都能"正好停在"答案上 */
-  {
-    const n = NODES.get("H");
-    const sEx = dist(Pt("C"), Pt("B")) / dist(Pt("C"), Pt("F"));
-    if (Math.abs(n.par.s - sEx) < 0.012 && n.par.s !== sEx) n.par.s = sEx;
-  }
-  origRender2();
+/* 状态条 + 滑杆回显：同样用 MutationObserver，任何来源的重绘都能同步 */
+function syncFig2(){
   const el = document.getElementById("status");
-  if (!el) return;
+  if (!el || !NODES.get("H")._v) return;
   const hr = document.getElementById("hRange");
   if (hr) hr.value = NODES.get("H").par.s;
   const gh = dist(Pt("G"), Pt("H")), hb = dist(Pt("B"), Pt("F")) / 2;
-  const okH = Math.abs(gh - hb) < 0.003;
-  if (okH){
+  if (Math.abs(gh - hb) < 0.003){
     el.textContent = "✓ GH = ½BF　此时 DF = √2·EH";
     el.classList.add("ok");
   } else {
     el.textContent = "把 H 拖到空心圈（BC 中点）试试";
     el.classList.remove("ok");
   }
-};
+}
+new MutationObserver(syncFig2).observe(document.getElementById("svg"), {childList: true});
+syncFig2();
 
 render();
 svg.setAttribute('viewBox', '24 27 325 268');

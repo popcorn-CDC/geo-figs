@@ -770,6 +770,7 @@ function bindDrag(){
     if (pb) pb.textContent = "▶ 播放";
     if (typeof playing !== "undefined") playing = false;
     window.addEventListener("pointermove", onDragMove);
+    svg.addEventListener("pointermove", onDragMove);   // 兜底：个别环境 window 上收不到
     window.addEventListener("pointerup", onDragUp, {once: true});
     window.addEventListener("pointercancel", onDragUp, {once: true});
   });
@@ -803,6 +804,7 @@ function onDragMove(ev){
 function onDragUp(){
   dragId = null;
   window.removeEventListener("pointermove", onDragMove);
+  svg.removeEventListener("pointermove", onDragMove);
 }
 
 /* ---------- 拖动吸附 ---------- */
@@ -1169,15 +1171,16 @@ _ar.addEventListener("input", ev=>{
 });
 document.getElementById("alphaOut").textContent = NODES.get("alp").par.deg.toFixed(1) + "°";
 
-const origRender1 = render;
-render = function(){
-  origRender1();
+/* 状态条：用 MutationObserver 跟 #svg 的每次重绘，不依赖 render 引用 */
+function syncFig1(){
   const el = document.getElementById("status");
-  if (!el) return;
+  if (!el || !NODES.get("F")._v) return;
   const v = angAt(Pt("F"), Pt("A"), Pt("C"));
   el.textContent = "∠AFC = " + v.toFixed(1) + "°　（α 怎么拖都不变）";
   el.classList.add("ok");
-};
+}
+new MutationObserver(syncFig1).observe(document.getElementById("svg"), {childList: true});
+syncFig1();
 
 render();
 svg.setAttribute('viewBox', '24 27 325 268');
