@@ -92,7 +92,7 @@
 <div class="wrap">
   <div class="head">
     <div class="ttl">27 题（2）· GH 与 BF 有什么关系时 DF = √2·EH</div>
-    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121h</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121i</div>
   </div>
 
   <div class="stage">
@@ -460,7 +460,7 @@ intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [9, -10], size: 1, step: 1
   doc: "E := AB ∩ CD"});
 
 angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "#7048E8"});
-angleNode("aC", "C", "A", "D", 0.52, "90°−α", {step: 3, color: "#7048E8"});
+angleNode("aC", "C", "A", "D", 0.36, "90°−α", {step: 3, color: "#7048E8"});
 angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 3, color: "#7048E8"});
 
 /* G：CF 中点；H：BC 中点（固定，不拖） */
@@ -469,21 +469,21 @@ midPoint("H", "B", "C", {label: "H", dir: [9, -9], size: 1, step: 3,
   doc: "H := MidPoint(B, C)   -- 结论位置，固定不动"});
 segNode("sEH", "E", "H", {step: 3, w: 2.4, color: "#2B8A3E"});
 segNode("sAH", "A", "H", {step: 3, w: 1.0, dash: "5 4", color: "#868E96"});
-rightNode("rH", "H", "B", "A", 0.11, {step: 3, color: "#868E96"});
+rightNode("rH", "H", "B", "A", 0.095, {step: 3, color: "#343A40"});
 segNode("sBH", "B", "H", {step: 4, w: 1.5});
 segNode("sGH", "G", "H", {step: 5, w: 3.2, color: "#E8590C"});
 segNode("cDF", "D", "F", {step: 5, w: 2.4, color: "#1C7ED6"});
 segNode("sBF", "B", "F", {step: 5, w: 3.2, color: "#E8590C"});
 
 /* 第 2 步：AB ⊥ CD */
-rightNode("rE", "E", "A", "C", 0.105, {step: 2});
+rightNode("rE", "E", "A", "C", 0.078, {step: 2});
 
 /* 第 4 步：作 DN ⊥ CF，△DNC ≌ △BHA */
 perpLineNode("plDN", "C", "F", "D", {step: 4, w: 0});
 intersectNode("N", "sCF", "plDN", 1, {label: "N", dir: [0, -10], size: 1, step: 4,
   doc: "N := CF ∩ PerpLine(CF, D)"});
 segNode("sDN", "D", "N", {step: 4, w: 2.4, color: "#2B8A3E"});
-rightNode("rN", "N", "C", "D", 0.10, {step: 4});
+rightNode("rN", "N", "C", "D", 0.09, {step: 4, color: "#343A40"});
 polyNode("triDNC", ["D", "N", "C"], {step: 4, fill: "none"});
 polyNode("triBHA", ["B", "H", "A"], {step: 4, fill: "none"});
 angleNode("aA2", "A", "B", "H", 0.58, "α/2", {step: 4, color: "#7048E8"});
