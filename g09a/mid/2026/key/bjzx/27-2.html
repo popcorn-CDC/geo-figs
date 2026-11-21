@@ -90,7 +90,7 @@
   </div>
 
   <div class="ctl">
-    <div class="hint">拖动图上的 <b>H</b>（橙色段 GH 的端点），让它追上空心圈</div>
+    <div class="sl"><input id="hRange" type="range" min="0.05" max="0.95" step="0.002" value="0.42"></div><div class="hint">拖动滑杆（或直接拖图上的 <b>H</b>），让它追上空心圈</div>
   </div>
 
   <details class="card" open>
@@ -157,7 +157,7 @@ G 为 CF 中点 ⟹ CG=CH+HG=2a+b ⟹ CF=2CG=4a+2b；<br>
    ============================================================ */
 const SQ = Math.PI / 180;
 const S = 108, CX = 54, CY = 268, W = 420, H = 308;   // 单位 → 像素
-let FS_PT = 6.2, FS_ANG = 5.0;   // 点标签 / 角标签字号（SVG 用户单位，随 viewBox 缩放）
+let FS_PT = 9.0, FS_ANG = 6.6;   // 点标签 / 角标签字号（SVG 用户单位，随 viewBox 缩放）
 const haloW = fs => Math.max(0.8, fs * 0.26).toFixed(2);
 const sx = x => CX + x * S, sy = y => CY - y * S;
 const ux = X => (X - CX) / S, uy = Y => (CY - Y) / S;
@@ -1202,12 +1202,23 @@ svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 markStep();
 render();
 NODES.get("H").par.s = 0.42;
+const _hr = document.getElementById("hRange");
+_hr.value = NODES.get("H").par.s;
+_hr.addEventListener("input", ev=>{ NODES.get("H").par.s = +ev.target.value; render(); });
 
 const origRender2 = render;
 render = function(){
+  /* 磁吸：H 靠近 BC 中点就自动吸附，让学生/滑杆都能"正好停在"答案上 */
+  {
+    const n = NODES.get("H");
+    const sEx = dist(Pt("C"), Pt("B")) / dist(Pt("C"), Pt("F"));
+    if (Math.abs(n.par.s - sEx) < 0.012 && n.par.s !== sEx) n.par.s = sEx;
+  }
   origRender2();
   const el = document.getElementById("status");
   if (!el) return;
+  const hr = document.getElementById("hRange");
+  if (hr) hr.value = NODES.get("H").par.s;
   const gh = dist(Pt("G"), Pt("H")), hb = dist(Pt("B"), Pt("F")) / 2;
   const okH = Math.abs(gh - hb) < 0.003;
   if (okH){
