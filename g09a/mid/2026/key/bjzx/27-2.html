@@ -92,14 +92,14 @@
 <div class="wrap">
   <div class="head">
     <div class="ttl">27 题（2）· GH 与 BF 有什么关系时 DF = √2·EH</div>
-    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121g</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121h</div>
   </div>
 
   <div class="stage">
     <svg id="svg" viewBox="0 0 420 308" xmlns="http://www.w3.org/2000/svg"></svg>
   </div>
   <div class="status" id="status"></div>
-  <div class="legend"><span><i style="background:#E8590C"></i>要比较的两段 GH、BF</span><span><i style="background:#1C7ED6"></i>有 √2 关系的两段 DF、EH</span><span><i style="background:#2B8A3E"></i>等于 ½BC 的 DN</span><span><i style="background:#7048E8"></i>角度</span></div>
+  <div class="legend"><span><i style="background:#E8590C"></i>要比较的两段 GH、BF</span><span><i style="background:#1C7ED6"></i>DF（= √2·EH）</span><span><i style="background:#2B8A3E"></i>EH、DN（都等于 ½BC）</span><span><i style="background:#7048E8"></i>角度</span></div>
 
   <div class="ctl">
     <div class="sl"><input id="alphaRange" type="range" min="3" max="88" step="0.5" value="56"></div><div class="hint">α = <b id="alphaOut">56.0°</b>　拖滑杆改变 α —— 整幅图跟着变，而 <b>H 始终是 BC 中点</b></div>
@@ -427,25 +427,25 @@ const alphaNow = () => angAt(Pt("A"), Pt("B"), Pt("C"));   // 实测 ∠BAC
 
 def("alp", {type: "none", par: {deg: 56}, doc: "α（滑杆驱动）", build(){ return {k: "none"}; }});
 const alDeg = () => NODES.get("alp").par.deg;
-derivedPoint("A", () => ({k: "pt", x: 0, y: 0}), {label: "A", dir: [-19, -2], size: 1, doc: "A := Point(0,0)（固定）"});
+derivedPoint("A", () => ({k: "pt", x: 0, y: 0}), {label: "A", dir: [-10, -1], size: 1, doc: "A := Point(0,0)（固定）"});
 
 /* C 可拖：只取方向，长度锁在 AC 上；拖它等于改 α */
 derivedPoint("C", () => { const A = Pt("A"), f = (45 + alDeg() / 2) * Math.PI / 180;
   return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
-  {label: "C", dir: [12, -15], size: 1, parents: ["A", "alp"],
+  {label: "C", dir: [7, -8], size: 1, parents: ["A", "alp"],
    doc: "C := A + AC·(cos(45°+α/2), sin(45°+α/2))"});
 
 derivedPoint("B", () => { const A = Pt("A"), f = (45 - alDeg() / 2) * Math.PI / 180;
   return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
-  {label: "B", dir: [14, -12], size: 1, parents: ["A", "C"],
+  {label: "B", dir: [8, -7], size: 1, parents: ["A", "C"],
    doc: "B := A + AB·(cos(45°−α/2), sin(45°−α/2))，AB = AC"});
 
 rotPoint("D", "A", () => 90 - alDeg(), "C",
-  {label: "D", dir: [-20, 20], size: 1, doc: "D := Rotate(A, 90°−α, C)"});
+  {label: "D", dir: [-11, 11], size: 1, doc: "D := Rotate(A, 90°−α, C)"});
 
 lineNode("lAD", "A", "D", {w: 0});
 lineNode("lCB", "C", "B", {w: 0});
-intersectNode("F", "lAD", "lCB", 1, {label: "F", dir: [12, 0], size: 1,
+intersectNode("F", "lAD", "lCB", 1, {label: "F", dir: [7, 0], size: 1,
   doc: "F := Line(A,D) ∩ Line(C,B)"});
 
 segNode("sAB", "A", "B", {step: 1, w: 1.5});
@@ -456,7 +456,7 @@ segNode("sAF", "A", "F", {step: 1, w: 1.5});
 polyNode("triABC", ["A", "B", "C"], {step: 1, fill: "none"});
 polyNode("triACD", ["A", "C", "D"], {step: 1, fill: "none"});
 
-intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [17, -19], size: 1, step: 1,
+intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [9, -10], size: 1, step: 1,
   doc: "E := AB ∩ CD"});
 
 angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "#7048E8"});
@@ -464,10 +464,10 @@ angleNode("aC", "C", "A", "D", 0.52, "90°−α", {step: 3, color: "#7048E8"});
 angleNode("aF", "F", "A", "C", 0.46, "45°", {step: 3, color: "#7048E8"});
 
 /* G：CF 中点；H：BC 中点（固定，不拖） */
-midPoint("G", "C", "F", {label: "G", dir: [12, -12], size: 1, step: 3, doc: "G := MidPoint(C, F)"});
-midPoint("H", "B", "C", {label: "H", dir: [16, -16], size: 1, step: 3,
+midPoint("G", "C", "F", {label: "G", dir: [7, -7], size: 1, step: 3, doc: "G := MidPoint(C, F)"});
+midPoint("H", "B", "C", {label: "H", dir: [9, -9], size: 1, step: 3,
   doc: "H := MidPoint(B, C)   -- 结论位置，固定不动"});
-segNode("sEH", "E", "H", {step: 3, w: 2.4, color: "#1C7ED6"});
+segNode("sEH", "E", "H", {step: 3, w: 2.4, color: "#2B8A3E"});
 segNode("sAH", "A", "H", {step: 3, w: 1.0, dash: "5 4", color: "#868E96"});
 rightNode("rH", "H", "B", "A", 0.11, {step: 3, color: "#868E96"});
 segNode("sBH", "B", "H", {step: 4, w: 1.5});
@@ -480,7 +480,7 @@ rightNode("rE", "E", "A", "C", 0.105, {step: 2});
 
 /* 第 4 步：作 DN ⊥ CF，△DNC ≌ △BHA */
 perpLineNode("plDN", "C", "F", "D", {step: 4, w: 0});
-intersectNode("N", "sCF", "plDN", 1, {label: "N", dir: [0, -18], size: 1, step: 4,
+intersectNode("N", "sCF", "plDN", 1, {label: "N", dir: [0, -10], size: 1, step: 4,
   doc: "N := CF ∩ PerpLine(CF, D)"});
 segNode("sDN", "D", "N", {step: 4, w: 2.4, color: "#2B8A3E"});
 rightNode("rN", "N", "C", "D", 0.10, {step: 4});
@@ -509,6 +509,16 @@ const EXTRA = [
   {label: "GH",     f: () => dist(Pt("G"), Pt("H")), dec: 4},
   {label: "½BF",    f: () => dist(Pt("B"), Pt("F")) / 2, dec: 4}
 ];
+
+NODES.get("A").dir = [-6, 0];
+NODES.get("C").dir = [0, -6];
+NODES.get("B").dir = [5, -5];
+NODES.get("D").dir = [0, 12];
+NODES.get("F").dir = [6, 0];
+NODES.get("E").dir = [-11, -4];
+NODES.get("G").dir = [5, -6];
+NODES.get("H").dir = [6, -5];
+NODES.get("N").dir = [5, -6];
 
 /* ---------- 绘图 ---------- */
 const svg = document.getElementById("svg");

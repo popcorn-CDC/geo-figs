@@ -92,7 +92,7 @@
 <div class="wrap">
   <div class="head">
     <div class="ttl">27 题（1）· 求 ∠AFC</div>
-    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121g</div>
+    <div class="src">2026 北京中学 初三（上）期中 · 27 题　v1121h</div>
   </div>
 
   <div class="stage">
@@ -421,26 +421,26 @@ def("alp", {type: "none", par: {deg: 56},
   doc: "α：0° < α < 90°（滑杆驱动；本图每个点都由 α 算出）",
   build(){ return {k: "none"}; }});
 
-freePoint("A", 0, 0, {label: "A", dir: [-19, -3], size: 2,
+freePoint("A", 0, 0, {label: "A", dir: [-10, -2], size: 2,
   doc: "A := Point(0,0)   -- 可拖，整幅图跟随平移"});
 
 derivedPoint("C", () => { const A = Pt("A"), f = RAD(45 + alDeg() / 2);
   return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
-  {label: "C", dir: [12, -15], size: 1, parents: ["A", "alp"],
+  {label: "C", dir: [7, -8], size: 1, parents: ["A", "alp"],
    doc: "C := A + AC·(cos(45°+α/2), sin(45°+α/2))"});
 
 derivedPoint("B", () => { const A = Pt("A"), f = RAD(45 - alDeg() / 2);
   return {k: "pt", x: A.x + AC * Math.cos(f), y: A.y + AC * Math.sin(f)}; },
-  {label: "B", dir: [14, -12], size: 1, parents: ["A", "alp"],
+  {label: "B", dir: [8, -7], size: 1, parents: ["A", "alp"],
    doc: "B := A + AB·(cos(45°−α/2), sin(45°−α/2))，AB = AC、∠BAC = α"});
 
 rotPoint("D", "A", () => 90 - alDeg(), "C",
-  {label: "D", dir: [-7, 18], size: 1,
+  {label: "D", dir: [-4, 10], size: 1,
    doc: "D := Rotate(A, 90°−α, C)   -- CD = CA、∠ACD = 90°−α"});
 
 lineNode("lAD", "A", "D", {w: 0});
 lineNode("lCB", "C", "B", {w: 0});
-intersectNode("F", "lAD", "lCB", 1, {label: "F", dir: [14, 8], size: 1,
+intersectNode("F", "lAD", "lCB", 1, {label: "F", dir: [8, 4], size: 1,
   doc: "F := Line(A,D) ∩ Line(C,B)   -- 射线 AD 与 CB 延长线交点"});
 
 segNode("sAB", "A", "B", {step: 1, w: 1.5});
@@ -451,7 +451,7 @@ segNode("sAF", "A", "F", {step: 1, w: 1.5});
 polyNode("triABC", ["A", "B", "C"], {step: 1, fill: "rgba(0,0,0,0.035)"});
 polyNode("triACD", ["A", "C", "D"], {step: 1, fill: "rgba(0,0,0,0.035)"});
 
-intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [17, -19], size: 1, step: 1,
+intersectNode("E", "sAB", "sCD", 1, {label: "E", dir: [9, -10], size: 1, step: 1,
   doc: "E := AB ∩ CD"});
 
 angleNode("aA", "A", "B", "C", 0.46, "α", {step: 2, color: "#7048E8"});
@@ -480,6 +480,13 @@ const EXTRA = [
   {label: "∠CAF+∠ACF", f: () => angAt(Pt("A"), Pt("C"), Pt("F")) + angAt(Pt("C"), Pt("A"), Pt("F")), dec: 4, unit: "°"},
   {label: "AF / AC",  f: () => dist(Pt("A"), Pt("F")) / AC, dec: 4}
 ];
+
+NODES.get("A").dir = [-6, 0];
+NODES.get("C").dir = [0, -6];
+NODES.get("B").dir = [5, -5];
+NODES.get("D").dir = [6, -6];
+NODES.get("F").dir = [6, 0];
+NODES.get("E").dir = [5, -9];
 
 /* ---------- 绘图 ---------- */
 const svg = document.getElementById("svg");
