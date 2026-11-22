@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 七上·清华附中朝阳·期中 26③ 数轴跳跃点</title>
+<style>
+  :root{
+    --ink:#1D1F24; --muted:#6B7280; --line:#E5E7EB; --paper:#FFFFFF;
+    --m:#1C7ED6; --m1:#4DABF7; --p:#2B8A3E; --m2:#E8590C; --len:#C92A2A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#F7F8FA;color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Hiragino Sans GB",sans-serif}
+  .wrap{max-width:1280px;margin:0 auto;padding:22px 24px 34px}
+  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  h1{font-size:21px;margin:0;letter-spacing:.2px}
+  .tag{font-size:13px;color:var(--muted)}
+  .formula{margin:10px 0 14px;padding:12px 16px;background:#fff;border:1px solid var(--line);
+    border-radius:10px;font-size:16px;line-height:1.9;color:#374151}
+  .formula b{color:var(--len)}
+  .formula .step{color:var(--muted);font-size:14px}
+  .board{background:var(--paper);border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 8px 28px rgba(16,24,40,.06);overflow:hidden}
+  svg{display:block;width:100%;height:auto;touch-action:none;cursor:default}
+  .ctrl{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));gap:12px 22px;
+    margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+  .slider{display:flex;align-items:center;gap:12px}
+  .slider label{width:96px;font-size:15px;color:#374151;white-space:nowrap}
+  .slider input[type=range]{flex:1;accent-color:var(--m)}
+  .slider.p input[type=range]{accent-color:var(--p)}
+  .slider output{width:64px;text-align:right;font-variant-numeric:tabular-nums;
+    font-size:15px;font-weight:600}
+  .btns{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+  button{height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--line);
+    background:#fff;color:#374151;font-size:13.5px;cursor:pointer;transition:.15s}
+  button:hover{background:#F3F4F6}
+  button.on{background:#111827;color:#fff;border-color:#111827}
+  button.preset{border-style:dashed}
+  .readout{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+  .card .k{font-size:12.5px;color:var(--muted)}
+  .card .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+  .card.len{border-color:#F3C1C1;background:#FFF7F7}
+  .card.len .v{color:var(--len)}
+  .card .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .note{margin-top:10px;font-size:13px;color:var(--muted)}
+  @media (max-width:760px){
+    .ctrl{grid-template-columns:1fr}
+    .readout{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>数轴上的「跳跃点」</h1>
+    <span class="tag">2026 七上 · 清华附中朝阳 · 期中数学 第 26 题③　M₁ = −m　M₂ = 2p + m　拖动 M / P 或拉动滑杆</span>
+  </header>
+
+  <div class="formula">
+    <span class="step">第一次跳跃：</span>M₁ = −m　→　
+    <span class="step">第二次跳跃（P 是 M₁M₂ 中点）：</span>M₂ = 2p − M₁ = 2p + m<br>
+    <span class="step">于是</span>　MM₂ = |M₂ − M| = |(2p + m) − m| = <b>2|p|</b>
+    <span class="step">　——与 m 无关，只由 P 的位置决定。</span>
+  </div>
+
+  <div class="board">
+    <svg id="board" viewBox="0 0 1240 430" role="img" aria-label="数轴跳跃点示意图"></svg>
+  </div>
+
+  <div class="ctrl">
+    <div class="slider">
+      <label>M：m =</label>
+      <input type="range" id="mRange" min="-6" max="6" step="0.1" value="-2">
+      <output id="mOut">−2.0</output>
+    </div>
+    <div class="slider p">
+      <label>P：p =</label>
+      <input type="range" id="pRange" min="-5" max="5" step="0.1" value="5">
+      <output id="pOut">5.0</output>
+    </div>
+  </div>
+
+  <div class="btns">
+    <button id="playM">▶ 让 m 动起来</button>
+    <button id="playP">▶ 让 p 动起来</button>
+    <button class="preset" data-m="-2" data-p="5">① m=−2，p=5</button>
+    <button class="preset" data-m="4" data-p="-3">② m&gt;0，p=−3</button>
+    <button class="preset" data-m="-4" data-p="1.5">自由取值</button>
+    <button id="reset">重置</button>
+  </div>
+
+  <div class="readout">
+    <div class="card"><div class="k">点 M</div><div class="v" id="vM">−2.0</div><div class="s">m ≠ 0</div></div>
+    <div class="card"><div class="k">一次跳跃点 M₁ = −m</div><div class="v" id="vM1">2.0</div><div class="s">与 M 关于 0 对称</div></div>
+    <div class="card"><div class="k">二次跳跃点 M₂ = 2p + m</div><div class="v" id="vM2">8.0</div><div class="s">与 M₁ 关于 P 对称</div></div>
+    <div class="card len"><div class="k">线段 MM₂ 的长度</div><div class="v" id="vLen">10.0</div><div class="s">= 2|p|，不随 m 变</div></div>
+  </div>
+
+  <div class="note" id="note">提示：播放「m 动起来」时，M 与 M₂ 始终同向平移相同的距离，红色长度不变。</div>
+</div>
+
+<script>
+(function(){
+  const SVG = document.getElementById('board');
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 1240, H = 430, PAD = 58;
+  const MIN = -18, MAX = 18;
+  const AXIS_Y = 250;
+  const st = { m: -2, p: 5, playing: null, last: 0 };
+  let drag = null;
+
+  const X = v => PAD + (v - MIN) / (MAX - MIN) * (W - 2 * PAD);
+  const V = x => MIN + (x - PAD) / (W - 2 * PAD) * (MAX - MIN);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const fmt = v => (Math.abs(v) < 0.05 ? 0 : v).toFixed(1).replace('-', '−');
+
+  function el(tag, attrs, text){
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function path(d, cls){ return el('path', Object.assign({ d, fill:'none' }, cls || {})); }
+
+  function build(){
+    SVG.innerHTML = '';
+    const defs = el('defs');
+    // 三种箭头
+    [['ahM','#4DABF7'],['ahP','#E8590C'],['ahL','#C92A2A']].forEach(([id,color])=>{
+      const mk = el('marker', { id, viewBox:'0 0 10 10', refX:'8', refY:'5',
+        markerWidth:'7', markerHeight:'7', orient:'auto-start-reverse' });
+      mk.appendChild(el('path', { d:'M 0 0 L 10 5 L 0 10 z', fill:color }));
+      defs.appendChild(mk);
+    });
+    SVG.appendChild(defs);
+
+    // 数轴
+    SVG.appendChild(el('line', { x1:X(MIN), y1:AXIS_Y, x2:X(MAX), y2:AXIS_Y,
+      stroke:'#343A40', 'stroke-width':2.2, 'stroke-linecap':'round' }));
+    SVG.appendChild(el('path', { d:`M ${X(MAX)} ${AXIS_Y} l -12 -6 l 0 12 z`, fill:'#343A40' }));
+
+    // 刻度
+    for (let v = MIN; v <= MAX; v += 1){
+      const major = Math.round(v) % 2 === 0;
+      const x = X(v);
+      SVG.appendChild(el('line', { x1:x, y1:AXIS_Y - (major ? 8 : 4.5), x2:x, y2:AXIS_Y + (major ? 8 : 4.5),
+        stroke: major ? '#343A40' : '#ADB5BD', 'stroke-width': major ? 1.8 : 1.2 }));
+      if (major && v !== 0){
+        SVG.appendChild(el('text', { x, y:AXIS_Y + 26, 'text-anchor':'middle',
+          'font-size':13, fill:'#868E96' }, String(v)));
+      }
+    }
+    // 原点
+    SVG.appendChild(el('text', { x:X(0), y:AXIS_Y + 26, 'text-anchor':'middle',
+      'font-size':14, 'font-weight':600, fill:'#343A40' }, '0'));
+
+    // 元素层
+    const gArrows = el('g', { id:'gArrows' });
+    const gLen = el('g', { id:'gLen' });
+    const gPts = el('g', { id:'gPts' });
+    SVG.appendChild(gArrows); SVG.appendChild(gLen); SVG.appendChild(gPts);
+
+    // 图例
+    const lx = W - 216, ly = 26;
+    [['M','#1C7ED6'],['M₁','#4DABF7'],['P','#2B8A3E'],['M₂','#E8590C']].forEach(([t,c],i)=>{
+      const x = lx + i * 54;
+      SVG.appendChild(el('circle', { cx:x, cy:ly, r:5, fill:c }));
+      SVG.appendChild(el('text', { x:x + 9, y:ly + 5, 'font-size':13, fill:'#495057' }, t));
+    });
+  }
+
+  function draw(){
+    const m = st.m, p = st.p;
+    const m1 = -m, m2 = 2 * p + m;
+    const xM = X(m), xM1 = X(m1), xP = X(p), xM2 = X(m2);
+
+    // 箭头①：M → M₁（上方第一层）
+    const a1 = document.getElementById('gArrows');
+    a1.innerHTML = '';
+    const y1 = AXIS_Y - 52, peak1 = AXIS_Y - 104;
+    a1.appendChild(path(`M ${xM} ${y1} Q ${(xM + xM1) / 2} ${peak1} ${xM1} ${y1}`,
+      { stroke:'#4DABF7', 'stroke-width':2, 'stroke-dasharray':'7 5', 'marker-end':'url(#ahM)' }));
+    a1.appendChild(el('circle', { cx:(xM + xM1) / 2, cy:peak1 + 4, r:12, fill:'#fff', stroke:'#4DABF7', 'stroke-width':1.2 }));
+    a1.appendChild(el('text', { x:(xM + xM1) / 2, y:peak1 + 9, 'text-anchor':'middle',
+      'font-size':13, 'font-weight':600, fill:'#1C7ED6' }, '①'));
+
+    // 箭头②：M₁ → M₂（上方第二层）
+    const y2 = AXIS_Y - 116, peak2 = AXIS_Y - 168;
+    a1.appendChild(path(`M ${xM1} ${y2} Q ${(xM1 + xM2) / 2} ${peak2} ${xM2} ${y2}`,
+      { stroke:'#E8590C', 'stroke-width':2, 'stroke-dasharray':'7 5', 'marker-end':'url(#ahP)' }));
+    a1.appendChild(el('circle', { cx:(xM1 + xM2) / 2, cy:peak2 + 4, r:12, fill:'#fff', stroke:'#E8590C', 'stroke-width':1.2 }));
+    a1.appendChild(el('text', { x:(xM1 + xM2) / 2, y:peak2 + 9, 'text-anchor':'middle',
+      'font-size':13, 'font-weight':600, fill:'#D9480F' }, '②'));
+
+    // 长度 MM₂（下方双箭头）
+    const gL = document.getElementById('gLen');
+    gL.innerHTML = '';
+    const yL = AXIS_Y + 84;
+    const xa = Math.min(xM, xM2), xb = Math.max(xM, xM2);
+    gL.appendChild(el('line', { x1:xa, y1:yL, x2:xb, y2:yL, stroke:'#C92A2A', 'stroke-width':2,
+      'marker-start':'url(#ahL)', 'marker-end':'url(#ahL)' }));
+    gL.appendChild(el('line', { x1:xa, y1:AXIS_Y + 40, x2:xa, y2:yL + 8, stroke:'#F1A9A9', 'stroke-width':1, 'stroke-dasharray':'4 4' }));
+    gL.appendChild(el('line', { x1:xb, y1:AXIS_Y + 40, x2:xb, y2:yL + 8, stroke:'#F1A9A9', 'stroke-width':1, 'stroke-dasharray':'4 4' }));
+    gL.appendChild(el('text', { x:(xa + xb) / 2, y:yL + 24, 'text-anchor':'middle',
+      'font-size':16, 'font-weight':700, fill:'#C92A2A' }, `MM₂ = ${fmt(Math.abs(m2 - m))}`));
+
+    // 点
+    const gP = document.getElementById('gPts');
+    gP.innerHTML = '';
+    const pts = [
+      { x:xM,  v:m,  name:'M',  color:'#1C7ED6', up:true,  draggable:'m' },
+      { x:xM1, v:m1, name:'M₁', color:'#4DABF7', up:false, draggable:null },
+      { x:xP,  v:p,  name:'P',  color:'#2B8A3E', up:true,  draggable:'p' },
+      { x:xM2, v:m2, name:'M₂', color:'#E8590C', up:false, draggable:null },
+    ];
+    for (const pt of pts){
+      gP.appendChild(el('circle', { cx:pt.x, cy:AXIS_Y, r:7.5, fill:pt.color,
+        stroke:'#fff', 'stroke-width':2, 'data-drag': pt.draggable || '' }));
+      let labelY = pt.up ? AXIS_Y - 20 : AXIS_Y + 52;
+      // 挨太近时错行，避免标签压在一起
+      if (pt.name === 'M₂' && Math.abs(xM2 - xM1) < 48) labelY = AXIS_Y + 70;
+      if (pt.name === 'P'  && Math.abs(xP  - xM ) < 48) labelY = AXIS_Y - 44;
+      gP.appendChild(el('text', { x:pt.x, y:labelY, 'text-anchor':'middle',
+        'font-size':18, 'font-style':'italic', 'font-family':'"Times New Roman", serif',
+        fill:pt.color, 'font-weight':600 }, pt.name));
+      if (pt.draggable){
+        gP.appendChild(el('circle', { cx:pt.x, cy:AXIS_Y, r:15, fill:'transparent',
+          style:'cursor:ew-resize', 'data-drag': pt.draggable }));
+      }
+    }
+
+    // 读数
+    document.getElementById('vM').textContent = fmt(m);
+    document.getElementById('vM1').textContent = fmt(m1);
+    document.getElementById('vM2').textContent = fmt(m2);
+    document.getElementById('vLen').textContent = fmt(Math.abs(m2 - m));
+    document.getElementById('mOut').textContent = fmt(m);
+    document.getElementById('pOut').textContent = fmt(p);
+    document.getElementById('mRange').value = m;
+    document.getElementById('pRange').value = p;
+
+    // P 与 M₁ 重合时 PM₁ = 0，不符合定义
+    const bad = Math.abs(p + m) < 0.05;
+    document.getElementById('note').innerHTML = bad
+      ? '<b style="color:#C92A2A">此时 P 与 M₁ 重合（PM₁ = 0），不满足「PM₁ = PM₂ ≠ 0」，请把 P 或 M 挪开。</b>'
+      : '提示：播放「m 动起来」时，M 与 M₂ 始终同向平移相同的距离，红色长度不变。';
+  }
+
+  // 拖拽
+  function svgPoint(ev){
+    const pt = SVG.createSVGPoint();
+    pt.x = ev.clientX; pt.y = ev.clientY;
+    return pt.matrixTransform(SVG.getScreenCTM().inverse());
+  }
+  SVG.addEventListener('pointerdown', ev=>{
+    const sp = svgPoint(ev);
+    const hitM = Math.abs(sp.x - X(st.m)) < 22;
+    const hitP = Math.abs(sp.x - X(st.p)) < 22;
+    if (hitM && (!hitP || Math.abs(sp.x - X(st.m)) <= Math.abs(sp.x - X(st.p)))) drag = 'm';
+    else if (hitP) drag = 'p';
+    else return;
+    try { SVG.setPointerCapture(ev.pointerId); } catch(e){}
+    stopAll();
+    ev.preventDefault();
+  });
+  SVG.addEventListener('pointerdown', ()=> document.querySelectorAll('button.preset').forEach(x=>x.classList.remove('on')), true);
+  SVG.addEventListener('pointermove', ev=>{
+    if (!drag) return;
+    const v = V(svgPoint(ev).x);
+    if (drag === 'm') st.m = clamp(Math.round(v * 10) / 10, -6, 6);
+    else st.p = clamp(Math.round(v * 10) / 10, -5, 5);
+    draw();
+  });
+  function endDrag(ev){ if (drag){ drag = null; try{ SVG.releasePointerCapture(ev.pointerId); }catch(e){} } }
+  SVG.addEventListener('pointerup', endDrag);
+  SVG.addEventListener('pointercancel', endDrag);
+
+  // 控件
+  document.getElementById('mRange').addEventListener('input', e=>{
+    st.m = parseFloat(e.target.value); stopAll(); draw();
+  });
+  document.getElementById('pRange').addEventListener('input', e=>{
+    st.p = parseFloat(e.target.value); stopAll(); draw();
+  });
+
+  function stopAll(){
+    st.playing = null;
+    document.getElementById('playM').classList.remove('on');
+    document.getElementById('playP').classList.remove('on');
+    document.getElementById('playM').textContent = '▶ 让 m 动起来';
+    document.getElementById('playP').textContent = '▶ 让 p 动起来';
+  }
+
+  let dirM = 1, dirP = 1;
+  function tick(t){
+    if (!st.playing) return;
+    if (!st.last) st.last = t;
+    const dt = Math.min(0.05, (t - st.last) / 1000);
+    st.last = t;
+    if (st.playing === 'm'){
+      st.m += dirM * dt * 3.2;
+      if (st.m >= 6){ st.m = 6; dirM = -1; }
+      if (st.m <= -6){ st.m = -6; dirM = 1; }
+    } else {
+      st.p += dirP * dt * 2.6;
+      if (st.p >= 5){ st.p = 5; dirP = -1; }
+      if (st.p <= -5){ st.p = -5; dirP = 1; }
+    }
+    draw();
+    requestAnimationFrame(tick);
+  }
+  function play(kind){
+    const was = st.playing;
+    stopAll();
+    if (was === kind) return;
+    st.playing = kind; st.last = 0;
+    const btn = document.getElementById(kind === 'm' ? 'playM' : 'playP');
+    btn.classList.add('on');
+    btn.textContent = '❚❚ 暂停';
+    requestAnimationFrame(tick);
+  }
+  document.getElementById('playM').onclick = ()=> play('m');
+  document.getElementById('playP').onclick = ()=> play('p');
+
+  const clearPreset = ()=> document.querySelectorAll('button.preset').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('button.preset').forEach(b=>{
+    b.onclick = ()=>{
+      stopAll(); clearPreset(); b.classList.add('on');
+      st.m = parseFloat(b.dataset.m); st.p = parseFloat(b.dataset.p);
+      draw();
+    };
+  });
+  const clearAllPresets = clearPreset;
+  document.getElementById('mRange').addEventListener('input', clearAllPresets);
+  document.getElementById('pRange').addEventListener('input', clearAllPresets);
+  document.getElementById('reset').onclick = ()=>{
+    stopAll(); st.m = -2; st.p = 5; draw();
+  };
+
+  build();
+  draw();
+  addEventListener('resize', ()=> draw());
+})();
+</script>
+</body>
+</html>
