@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>28题·α三角点（动图）</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#f7f8fa;color:#111827;
+  font:15px/1.7 -apple-system,"PingFang SC",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 18px 40px}
+h1{font-size:20px;margin:0 0 4px}
+.sub{color:#6b7280;font-size:13px;margin-bottom:12px}
+.ans{display:inline-block;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;
+  border-radius:8px;padding:4px 10px;font-weight:600;margin-bottom:12px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:12px;
+  box-shadow:0 1px 3px rgba(0,0,0,.05)}
+canvas{width:100%;height:auto;display:block;border-radius:10px;background:#fff}
+.bar{display:flex;align-items:center;gap:14px;margin-top:10px;flex-wrap:wrap;font-size:14px}
+.bar label{display:flex;align-items:center;gap:6px}
+.bar input[type=range]{width:190px}
+.val{font-variant-numeric:tabular-nums;font-weight:600}
+.ok{color:#047857}.no{color:#b91c1c}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:#4b5563}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+</style></head><body><div class="wrap">
+<h1>28 题 · α 三角点（第 3 问 动图）</h1>
+<div class="sub">正方形 CDEF 沿 30° 方向滑动；线段 PQ 在 MN 上滑动，其 30° 三角点轨迹（扇形）扫过的区域为绿色。</div>
+<div class="ans">答案：t = 1 或 3 ≤ t ≤ 2+√3</div>
+<div class="card">
+  <canvas id="cv"></canvas>
+  <div class="bar">
+    <label>t <input id="st" type="range" min="1" max="4.7320508075688772" step="0.001" value="3"><span class="val" id="vt">3.000</span></label>
+    <label>u <input id="su" type="range" min="0" max="2.7320508075688772" step="0.001" value="1.4"><span class="val" id="vu">1.400</span></label>
+    <label><input id="play" type="checkbox" checked> 自动播放</label>
+    <span id="judge" class="ok">t 在区间内 ✓</span>
+  </div>
+  <div class="legend">
+    <span><i style="background:#a7f3d0"></i>PQ 扫过的区域</span>
+    <span><i style="background:#059669"></i>边界（极限位置）</span>
+    <span><i style="background:#1D4ED8"></i>正方形 CDEF</span>
+    <span><i style="background:#C2410C"></i>t=1 的临界位置</span>
+  </div>
+</div>
+<script>
+const S3 = Math.sqrt(3), UMAX = 1 + S3, TMIN = 1, TMAX = 2 + S3;
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let W = 0, H = 0, DPR = Math.max(1, devicePixelRatio || 1);
+// 世界坐标 -> 屏幕
+let SC = 78, OX = 0, OY = 0;
+function layout(){
+  const w = cv.clientWidth || 900;
+  W = w; H = Math.round(w * 0.62);
+  cv.width = W * DPR; cv.height = H * DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  // 世界范围 x[-2.2, 9.2], y[-2.6, 7.4]
+  SC = Math.min(W / 11.4, H / 10.0);
+  OX = W/2 - SC * 3.5; OY = H/2 + SC * 2.4;
+}
+const X = x => OX + x * SC, Y = y => OY - y * SC;
+
+function fanPath(u, draw){
+  // 扇形（PQ 的 30° 三角点轨迹）：圆心 T=(u+√3,3)，半径 2√3，上半圆 + 两条边到 K
+  const T = [u + S3, 3], R = 2 * S3, K = [u + S3, 1];
+  ctx.beginPath();
+  ctx.arc(X(T[0]), Y(T[1]), R * SC, Math.PI, 0, false); // 上半圆（canvas 角度：π→0 逆时针=上方）
+  ctx.moveTo(X(T[0] + R), Y(T[1])); ctx.lineTo(X(K[0]), Y(K[1]));
+  ctx.moveTo(X(T[0] - R), Y(T[1])); ctx.lineTo(X(K[0]), Y(K[1]));
+  if (draw) ctx.stroke();
+}
+
+function buildSweep(){
+  // 收集足够密的 u 采样，用 nonzero fill 求并集
+  const p = new Path2D();
+  const N = 260;
+  for (let i = 0; i <= N; i++){
+    const u = UMAX * i / N;
+    const T = [u + S3, 3], R = 2 * S3, K = [u + S3, 1];
+    p.moveTo(X(T[0] + R), Y(T[1]));
+    p.arc(X(T[0]), Y(T[1]), R * SC, Math.PI, 0, false);
+    p.moveTo(X(T[0] + R), Y(T[1])); p.lineTo(X(K[0]), Y(K[1]));
+    p.moveTo(X(T[0] - R), Y(T[1])); p.lineTo(X(K[0]), Y(K[1]));
+  }
+  return p;
+}
+
+function drawSquare(t, col, dash, lw){
+  const C = [S3 * t, t], D = [S3 * t, t + 1], E = [S3 * t + 1, t + 1], F = [S3 * t + 1, t];
+  ctx.save();
+  ctx.strokeStyle = col; ctx.lineWidth = lw || 2.2; ctx.setLineDash(dash || []);
+  ctx.beginPath();
+  ctx.moveTo(X(C[0]), Y(C[1])); ctx.lineTo(X(D[0]), Y(D[1]));
+  ctx.lineTo(X(E[0]), Y(E[1])); ctx.lineTo(X(F[0]), Y(F[1])); ctx.closePath();
+  ctx.stroke(); ctx.restore();
+  return {C, D, E, F};
+}
+
+let sweepPath = null;
+function render(t, u){
+  if (!sweepPath) sweepPath = buildSweep();
+  ctx.clearRect(0, 0, W, H);
+
+  // 网格
+  ctx.strokeStyle = '#eef1f5'; ctx.lineWidth = 1;
+  const gs = 1;
+  for (let x = -2; x <= 9; x++){ ctx.beginPath(); ctx.moveTo(X(x), 0); ctx.lineTo(X(x), H); ctx.stroke(); }
+  for (let y = -2; y <= 7; y++){ ctx.beginPath(); ctx.moveTo(0, Y(y)); ctx.lineTo(W, Y(y)); ctx.stroke(); }
+
+  // 扫掠区
+  ctx.save();
+  ctx.fillStyle = 'rgba(5,150,105,.20)';
+  ctx.fill(sweepPath, 'nonzero');
+  ctx.strokeStyle = '#059669'; ctx.lineWidth = 3;
+  ctx.stroke(sweepPath);
+  ctx.restore();
+
+  // MN 与 PQ
+  ctx.strokeStyle = '#111827'; ctx.lineWidth = 2.2;
+  ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(6.2), Y(0)); ctx.stroke();
+  ctx.strokeStyle = '#0f766e'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(X(u), Y(0)); ctx.lineTo(X(u + 2*S3), Y(0)); ctx.stroke();
+
+  // 三个临界方块
+  drawSquare(1, '#C2410C', [6,4], 2);
+  drawSquare(3, '#9AA7B4', [6,4], 2);
+  drawSquare(TMAX, '#1D4ED8', [6,4], 2);
+
+  // 当前扇形（细红）
+  ctx.save();
+  ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 1.6; ctx.globalAlpha = .9;
+  fanPath(u, true);
+  ctx.restore();
+
+  // 当前正方形
+  const sq = drawSquare(t, '#1D4ED8', [], 2.8);
+
+  // 标签
+  ctx.font = '600 15px -apple-system,"PingFang SC",sans-serif';
+  ctx.fillStyle = '#111827';
+  const lab = (p, s, dx=8, dy=-8) => ctx.fillText(s, X(p[0]) + dx, Y(p[1]) + dy);
+  lab([0,0], 'M', -14, 18); lab([6.2,0], 'N', 4, 18);
+  lab([u,0], 'P', -6, 20); lab([u+2*S3,0], 'Q', -4, 20);
+  ctx.fillStyle = '#1D4ED8';
+  lab(sq.C, 'C', -18, 16); lab(sq.D, 'D', -18, -6);
+  lab(sq.E, 'E', 6, -6); lab(sq.F, 'F', 6, 18);
+  ctx.fillStyle = '#C2410C'; lab([S3,1], 't=1', -26, 16);
+  ctx.fillStyle = '#6b7280'; lab([S3*3,3], 't=3', -30, -8);
+  ctx.fillStyle = '#1D4ED8'; lab([S3*TMAX+1,TMAX+1], 't=2+√3', 8, -10);
+
+  // 右上角显示 t
+  ctx.font = '700 22px -apple-system,"PingFang SC",sans-serif';
+  const ok = (Math.abs(t - 1) < 0.045) || (t >= 3 - 1e-9 && t <= TMAX + 1e-9);
+  ctx.fillStyle = ok ? '#047857' : '#b91c1c';
+  ctx.fillText('t = ' + t.toFixed(3) + (ok ? '  ✓ 满足' : '  ✗ 不满足'), 18, 34);
+  return ok;
+}
+
+const st = document.getElementById('st'), su = document.getElementById('su');
+const vt = document.getElementById('vt'), vu = document.getElementById('vu');
+const judge = document.getElementById('judge'), play = document.getElementById('play');
+let dirT = 1, dirU = 1, last = 0;
+
+function sync(){
+  vt.textContent = (+st.value).toFixed(3);
+  vu.textContent = (+su.value).toFixed(3);
+  const ok = render(+st.value, +su.value);
+  judge.textContent = ok ? 't 满足条件 ✓' : 't 不满足 ✗';
+  judge.className = ok ? 'ok' : 'no';
+}
+function loop(ts){
+  if (last && play.checked){
+    const dt = Math.min(0.05, (ts - last) / 1000);
+    let t = +st.value + dirT * dt * 1.15;
+    let u = +su.value + dirU * dt * 0.55;
+    if (t > TMAX){ t = TMAX; dirT = -1; }
+    if (t < TMIN){ t = TMIN; dirT = 1; }
+    if (u > UMAX){ u = UMAX; dirU = -1; }
+    if (u < 0){ u = 0; dirU = 1; }
+    st.value = t; su.value = u; sync();
+  }
+  last = ts; requestAnimationFrame(loop);
+}
+st.oninput = su.oninput = ()=>{ play.checked = false; sync(); };
+addEventListener('resize', ()=>{ layout(); sweepPath = null; sync(); });
+layout(); sync(); requestAnimationFrame(loop);
+</script></div></body></html>
