@@ -412,7 +412,7 @@ body{margin:0!important;padding:0!important;overflow:hidden!important}
             if(typeof draw==="function") draw();
           }
         }catch(e){}
-        requestAnimationFrame(tick);
+        setTimeout(tick, 16);
       })();
     }catch(e){}
   }, 500);
@@ -4589,7 +4589,7 @@ function exportInteractiveHTML(){
       '            if(typeof draw==="function") draw();',
       '          }',
       '        }catch(e){}',
-      '        requestAnimationFrame(tick);',
+      '        setTimeout(tick, 16);',
       '      })();',
       '    }catch(e){}',
       '  }, 500);',
