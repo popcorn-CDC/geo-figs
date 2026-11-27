@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>潇湘尺 · Mac</title>
+<title>27 手拉手旋转（∠B=45° ∠C=30°）</title>
 <link rel="preload" href="fonts/xxc-serif-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/xxc-serif-600.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -4735,6 +4735,9 @@ window.addEventListener('load', function(){
   }, 600);
 });
 </scr` + `ipt>`;
+    // 静态 <title> 也换成工程名：题库索引页读的就是它（否则显示「潇湘尺 · Mac」）
+    const docName = state.doc || '潇湘尺课件';
+    src = src.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + docName.replace(/[<>&]/g, '') + '</title>');
     const at = src.indexOf('<body>');
     return at > 0 ? (src.slice(0, at+6) + seedTag + demo + src.slice(at+6)) : src;
   });
