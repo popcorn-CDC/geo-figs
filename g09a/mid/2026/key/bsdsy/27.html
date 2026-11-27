@@ -451,6 +451,8 @@ window.addEventListener('load', function(){
         clearTimeout(window.__xxcRT);
         window.__xxcRT = setTimeout(layout, 150);
       });
+      // 题库页的浏览器标签用工程名，而不是编辑器的「潇湘尺 · Mac」
+      try{ if(S.doc) document.title = S.doc; }catch(e){}
       layout();
       // 用户一上手就接管：停掉自动播放，免得拖滑条时被 tick 抢值
       cv.addEventListener('pointerdown', function(){
@@ -4707,6 +4709,8 @@ window.addEventListener('load', function(){
         clearTimeout(window.__xxcRT);
         window.__xxcRT = setTimeout(layout, 150);
       });
+      // 题库页的浏览器标签用工程名，而不是编辑器的「潇湘尺 · Mac」
+      try{ if(S.doc) document.title = S.doc; }catch(e){}
       layout();
       // 用户一上手就接管：停掉自动播放，免得拖滑条时被 tick 抢值
       cv.addEventListener('pointerdown', function(){
