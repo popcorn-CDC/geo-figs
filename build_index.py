@@ -51,6 +51,18 @@ def title_of(path):
         pass
     return os.path.splitext(os.path.basename(path))[0]
 
+def nick_map(path):
+    """_动图.json：文件名 → 中文可读名（与镜像菁师帮共用同一份映射）"""
+    f = os.path.join(path, "_动图.json")
+    if not os.path.isfile(f):
+        return {}
+    try:
+        import json
+        d = json.load(open(f, encoding="utf-8"))
+        return {k: v for k, v in d.items() if isinstance(v, str) and v.strip()}
+    except Exception:
+        return {}
+
 def count_html(path):
     n = 0
     for dp, dns, fns in os.walk(path):
@@ -83,6 +95,7 @@ def write_index(path):
         elif e.lower().endswith((".html", ".htm")):
             entries.append(("file", e, None, full))
 
+    nick = nick_map(path)
     rows = []
     for kind, e, n, full in entries:
         if kind == "dir":
@@ -94,7 +107,7 @@ def write_index(path):
         else:
             rows.append(
                 f'<a class="item" href="{html.escape(e)}"><span class="ico">📄</span>'
-                f'<span class="nm">{html.escape(title_of(full))}</span></a>'
+                f'<span class="nm">{html.escape(nick.get(e) or title_of(full))}</span></a>'
             )
 
     body = "\n".join(rows) if rows else '<div class="empty">这个分类下还没有内容。</div>'
